@@ -1,4 +1,3 @@
-
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
 import logo from '../../assets/logo.png';
 import imgFlight from '../../assets/avion.png'
@@ -6,13 +5,12 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from 'react-hook-form';
 import { useStoreFlight } from '../../store/store';
 
-import {dataReservation} from "../../helpers/utils"
-
+import { dataReservation } from "../../helpers/utils"
 
 const UserReservationForm = () => {
     const navigate = useNavigate();
+    const { information } = useStoreFlight();
 
-    const { information } = useStoreFlight()
     const {
         register,
         handleSubmit,
@@ -22,37 +20,38 @@ const UserReservationForm = () => {
 
     const onSubmit = async (data) => {
         try {
-            console.log("data")
-            console.log(data)
-            console.log(data)
+            console.log("Formulario enviado:", data);
 
+            // Preparar datos para enviar al backend
+            const dataEndpoint = dataReservation(information.flight, data);
+            console.log("Datos preparados para la API:", dataEndpoint);
 
-            // Replace with your actual API endpoint
-            const dataEndpoint = dataReservation(information.flight, data)
-            // const response = await axios.post('/api/reservations', dataEndpoint);
-            console.log("dataEndpoint")
-            console.log(dataEndpoint)
-            alert('todo perfecto');
-            
+            // Enviar datos al backend
+            const response = await fetch(' http://127.0.0.1:9696/api/bookings', { 
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(dataEndpoint),
+            });
 
-            const response = { "data": [2, 5, 4] }
+            const result = await response.json(); // Convertir la respuesta en JSON
+            console.log("Respuesta del servidor:", result);
 
-            // Successful reservation
-            if (response.data) {
-
-                reset(); // Clear form
-                navigate("/userConsultation");
+            // Verificar si la reserva fue exitosa
+            if (response.ok && result.id) {
+                alert(`Reserva creada con éxito. Tu ID de reserva es: ${result.id}`);
+                reset(); // Limpiar formulario
+                navigate("/userConsultation"); // Navegar a la vista de consulta
             } else {
-                alert('Error al realizar la reserva');
+                alert('Error al realizar la reserva. Intenta de nuevo.');
             }
         } catch (error) {
             console.error('Error en la reserva:', error);
-            alert('Ocurrió un error al procesar la reserva');
+            alert('Ocurrió un error al procesar la reserva. Revisa tu conexión o contacta al soporte.');
         }
     };
 
-    console.log("information")
-    console.log({ ...information })
     const goToReservationLookup = () => {
         navigate("/userConsultation"); // Navegar a la vista de consulta
     };
@@ -123,7 +122,6 @@ const UserReservationForm = () => {
                                         </Form.Control.Feedback>
                                     </Form.Group>
                                 </Col>
-
                             </Row>
 
                             <Row className="mb-3">
@@ -167,6 +165,7 @@ const UserReservationForm = () => {
                                     </Form.Group>
                                 </Col>
                             </Row>
+
                             <Row className="mb-3">
                                 <Col md={6}>
                                     <Form.Group controlId="formBirthDate" className="mb-3">
@@ -206,8 +205,8 @@ const UserReservationForm = () => {
                                         </Form.Control.Feedback>
                                     </Form.Group>
                                 </Col>
-
                             </Row>
+
                             <Row className="mb-3">
                                 <Col md={6}>
                                     <Form.Group controlId="formDocumentType" className="mb-3">
@@ -248,14 +247,13 @@ const UserReservationForm = () => {
                                         </Form.Control.Feedback>
                                     </Form.Group>
                                 </Col>
-
                             </Row>
+
                             <div className="text-center">
                                 <Button variant="primary" type="submit">
                                     Hacer Reserva
                                 </Button>
                             </div>
-
                         </Form>
                     </Col>
 
@@ -263,7 +261,7 @@ const UserReservationForm = () => {
                     <Col md={6}>
                         <div className="d-flex justify-content-center align-items-center">
                             <img
-                                src={imgFlight} // Reemplaza con la URL de tu imagen
+                                src={imgFlight}
                                 alt="Reserva logo"
                                 className="img-fluid rounded"
                             />
@@ -271,9 +269,8 @@ const UserReservationForm = () => {
                     </Col>
                 </Row>
             </Container>
-
         </>
     );
 }
 
-export default UserReservationForm
+export default UserReservationForm;

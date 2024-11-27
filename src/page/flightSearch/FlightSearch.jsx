@@ -73,7 +73,7 @@ const FlightSearch = () => {
         const fetchAirports = async () => {
             try {
                 start_flight()
-                const response = await axios.get('http://127.0.0.1:9696/api/airports/');
+                const response = await axios.get('https://cantozil.pythonanywhere.com/api/airports/');
                 console.log(response)
 
                 // const data = [{"code": "sdfsd", "name": "Hola cimo est"}, {"code": "sdfsd43", "name": "Hola cimo est434"}]

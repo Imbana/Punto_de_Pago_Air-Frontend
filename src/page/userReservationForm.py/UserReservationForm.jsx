@@ -4,12 +4,14 @@ import logo from '../../assets/logo.png';
 import imgFlight from '../../assets/avion.png'
 import { useNavigate } from "react-router-dom";
 import { useForm } from 'react-hook-form';
-import {useStoreFlight} from  '../../store/store';
+import { useStoreFlight } from '../../store/store';
+
+import {dataReservation} from "../../helpers/utils"
 
 
 const UserReservationForm = () => {
     const navigate = useNavigate();
- 
+
     const { information } = useStoreFlight()
     const {
         register,
@@ -23,13 +25,21 @@ const UserReservationForm = () => {
             console.log("data")
             console.log(data)
             console.log(data)
+
+
             // Replace with your actual API endpoint
-            // const response = await axios.post('/api/reservations', data);
+            const dataEndpoint = dataReservation(information.flight, data)
+            // const response = await axios.post('/api/reservations', dataEndpoint);
+            console.log("dataEndpoint")
+            console.log(dataEndpoint)
+            alert('todo perfecto');
+            
+
             const response = { "data": [2, 5, 4] }
 
             // Successful reservation
             if (response.data) {
-                
+
                 reset(); // Clear form
                 navigate("/userConsultation");
             } else {
@@ -42,7 +52,7 @@ const UserReservationForm = () => {
     };
 
     console.log("information")
-    console.log({...information})
+    console.log({ ...information })
     const goToReservationLookup = () => {
         navigate("/userConsultation"); // Navegar a la vista de consulta
     };
@@ -74,26 +84,6 @@ const UserReservationForm = () => {
                         <Form onSubmit={handleSubmit(onSubmit)}>
                             <Row className="mb-3">
                                 <Col md={6}>
-                                    <Form.Group controlId="formLastName" className="mb-3">
-                                        <Form.Label>Apellido</Form.Label>
-                                        <Form.Control
-                                            type="text"
-                                            placeholder="Ingresa tu apellido"
-                                            {...register('lastName', {
-                                                required: 'El apellido es obligatorio',
-                                                minLength: {
-                                                    value: 2,
-                                                    message: 'El apellido debe tener al menos 2 caracteres'
-                                                }
-                                            })}
-                                            isInvalid={!!errors.lastName}
-                                        />
-                                        <Form.Control.Feedback type="invalid">
-                                            {errors.lastName?.message}
-                                        </Form.Control.Feedback>
-                                    </Form.Group>
-                                </Col>
-                                <Col md={6}>
                                     <Form.Group controlId="formFirstName" className="mb-3">
                                         <Form.Label>Nombre</Form.Label>
                                         <Form.Control
@@ -113,6 +103,27 @@ const UserReservationForm = () => {
                                         </Form.Control.Feedback>
                                     </Form.Group>
                                 </Col>
+                                <Col md={6}>
+                                    <Form.Group controlId="formLastName" className="mb-3">
+                                        <Form.Label>Apellido</Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            placeholder="Ingresa tu apellido"
+                                            {...register('lastName', {
+                                                required: 'El apellido es obligatorio',
+                                                minLength: {
+                                                    value: 2,
+                                                    message: 'El apellido debe tener al menos 2 caracteres'
+                                                }
+                                            })}
+                                            isInvalid={!!errors.lastName}
+                                        />
+                                        <Form.Control.Feedback type="invalid">
+                                            {errors.lastName?.message}
+                                        </Form.Control.Feedback>
+                                    </Form.Group>
+                                </Col>
+
                             </Row>
 
                             <Row className="mb-3">
@@ -141,7 +152,7 @@ const UserReservationForm = () => {
                                         <Form.Control
                                             type="email"
                                             placeholder="Ingresa tu correo"
-                                            {...register('email', { 
+                                            {...register('email', {
                                                 required: 'El correo es obligatorio',
                                                 pattern: {
                                                     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
@@ -158,12 +169,30 @@ const UserReservationForm = () => {
                             </Row>
                             <Row className="mb-3">
                                 <Col md={6}>
+                                    <Form.Group controlId="formBirthDate" className="mb-3">
+                                        <Form.Label>Fecha de Nacimiento</Form.Label>
+                                        <Form.Control
+                                            type="date"
+                                            placeholder="Ingresa tu fecha de nacimiento"
+                                            {...register('birthDate', {
+                                                required: 'La fecha de nacimiento es obligatoria',
+                                                validate: value =>
+                                                    (new Date(value) <= new Date()) || 'La fecha no puede ser en el futuro'
+                                            })}
+                                            isInvalid={!!errors.birthDate}
+                                        />
+                                        <Form.Control.Feedback type="invalid">
+                                            {errors.birthDate?.message}
+                                        </Form.Control.Feedback>
+                                    </Form.Group>
+                                </Col>
+                                <Col md={6}>
                                     <Form.Group controlId="formPhone" className="mb-3">
                                         <Form.Label>Celular</Form.Label>
                                         <Form.Control
                                             type="text"
                                             placeholder="Ingresa tu número de celular"
-                                            {...register('phone', { 
+                                            {...register('phone', {
                                                 required: 'El número de celular es obligatorio',
                                                 pattern: {
                                                     value: /^[0-9]{10}$/,
@@ -177,11 +206,14 @@ const UserReservationForm = () => {
                                         </Form.Control.Feedback>
                                     </Form.Group>
                                 </Col>
+
+                            </Row>
+                            <Row className="mb-3">
                                 <Col md={6}>
                                     <Form.Group controlId="formDocumentType" className="mb-3">
                                         <Form.Label>Tipo de Documento</Form.Label>
                                         <Form.Select
-                                             {...register('documentType', { 
+                                            {...register('documentType', {
                                                 required: 'Selecciona un tipo de documento'
                                             })}
                                             isInvalid={!!errors.documentType}
@@ -196,15 +228,13 @@ const UserReservationForm = () => {
                                         </Form.Control.Feedback>
                                     </Form.Group>
                                 </Col>
-                            </Row>
-                            <Row className="mb-3">
                                 <Col md={6}>
                                     <Form.Group controlId="formDocumentNumber" className="mb-3">
                                         <Form.Label>Número de Documento</Form.Label>
                                         <Form.Control
                                             type="text"
                                             placeholder="Ingresa tu número de documento"
-                                            {...register('documentNumber', { 
+                                            {...register('documentNumber', {
                                                 required: 'El número de documento es obligatorio',
                                                 minLength: {
                                                     value: 6,
@@ -218,6 +248,7 @@ const UserReservationForm = () => {
                                         </Form.Control.Feedback>
                                     </Form.Group>
                                 </Col>
+
                             </Row>
                             <div className="text-center">
                                 <Button variant="primary" type="submit">

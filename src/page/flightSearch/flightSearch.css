@@ -327,3 +327,7 @@ body {
     gap: 50px;
     margin-top: 20px;
 }
+
+.day-selector{
+    gap: 10px;
+}

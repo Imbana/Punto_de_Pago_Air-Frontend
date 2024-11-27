@@ -2,19 +2,20 @@ import { useState, useEffect } from 'react';
 import { Card, Container, Row, Col, Modal, Button } from 'react-bootstrap';
 import { MdFlight } from 'react-icons/md';
 import { useSearchParams } from "react-router";
-import {useStoreFlight} from  '../../store/store'
+import { useStoreFlight } from '../../store/store'
 import { useNavigate } from "react-router-dom";
 import logo from '../../assets/logo.png';
 import axios from 'axios';
+import { processFlightData } from "../../helpers/utils"
 
-import {getWeekDays} from "../../helpers/utiils"
+import { getWeekDays } from "../../helpers/utils"
 
 
 
 const FlightList = () => {
   const [results, setResults] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [modalContent, setModalContent] = useState({});
+  const [modalContent, setModalContent] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const { info_flight } = useStoreFlight()
@@ -22,7 +23,8 @@ const FlightList = () => {
   const destination = searchParams.get('destination');
   const date = searchParams.get('date');
   const navigate = useNavigate();
- 
+  
+
   const handleShowModal = (flight) => {
     setModalContent(flight);
     setShowModal(true);
@@ -30,30 +32,29 @@ const FlightList = () => {
 
   const handleCloseModal = () => {
     setShowModal(false);
-    setModalContent({});
+    setModalContent([]);
   };
 
   const handleSelectFlight = () => {
 
-    info_flight({
-      "origin": modalContent.origin?.code,
-      "destination": modalContent.origin?.code,
-      "time":modalContent.departure_time,
-      "date": date
-    })
-    navigate('/userReservation');
+    info_flight(modalContent)
+    navigate('/userReservation',{ replace: true });
   };
   useEffect(() => {
     setLoading(true);
     const fetchFlightList = async () => {
       try {
 
-        const response = await axios.get('http://127.0.0.1:9696/api/flights/search', {
+        const response = await axios.get('https://cantozil.pythonanywhere.com/api/flights/search', {
           params: { origin, destination, date }
         });
 
-        console.log(response.data.direct_flights)
-        setResults(response.data.direct_flights);
+        // const dataResponse = processFlightData(response.data)
+        console.log("response")
+        console.log(response)
+
+        setResults(response.data);
+        // console.log(data)
 
       } catch (err) {
         console.error('Error fetching flights:', err);
@@ -67,17 +68,17 @@ const FlightList = () => {
 
   const [selectedDate, setSelectedDate] = useState(date);
 
-  
+
 
   const weekDays = getWeekDays(selectedDate);
 
   const handleDayClick = (date) => {
-      setSelectedDate(date);
-      setSearchParams({
-          origin,
-          destination,
-          date, // Actualiza la URL con la nueva fecha
-      });
+    setSelectedDate(date);
+    setSearchParams({
+      origin,
+      destination,
+      date, // Actualiza la URL con la nueva fecha
+    });
   };
 
   return (
@@ -106,7 +107,7 @@ const FlightList = () => {
           <h2 className="mb-5">Vuelos desde {origin} hacia {destination}</h2>
 
           {/* Day Selector */}
-          <div className="day-selector d-flex justify-content-between mb-4">
+          <div className="day-selector d-flex justify-content-between mb-4 px-2">
             {weekDays.map((date) => {
               const dayName = new Intl.DateTimeFormat('es-CO', { weekday: 'long' }).format(new Date(date + 'T00:00:00-05:00'));
 
@@ -130,16 +131,32 @@ const FlightList = () => {
                   <Card className="card-flight">
                     <div className="d-flex justify-content-between align-items-center mb-3">
                       <div style={{ textAlign: 'left' }}>
-                        <h5 className="flight-info-header">{flight.departure_time}</h5>
+                        <h5 className="flight-info-header">
+                          {
+                            new Date(flight.fecha_inicio).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })
+                          }
+                        </h5>
                         <span className="flight-info-sub">{flight.origin.code}</span>
                       </div>
                       <div style={{ textAlign: 'right' }}>
-                        <h5 className="flight-info-header">{flight.arrival_time}</h5>
+                        <h5 className="flight-info-header">
+                          {
+                            new Date(flight.fecha_final).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })
+                          }
+                        </h5>
                         <span className="flight-info-sub">{flight.destination.code}</span>
                       </div>
                     </div>
                     <div className="text-center mb-3">
-                      <div className="flight-type">Directo</div>
+                      <div className="flight-type">
+                        {
+                          flight.vuelos.length > 1 ?
+                            <span>{flight.vuelos.length - 1} Escalas</span> :
+                            <span>Directo</span>
+
+                        }
+
+                      </div>
                       <div className="d-flex align-items-center justify-content-center mt-3">
                         <div className="flight-details-divider"></div>
                         <MdFlight className="flight-details-icon" />
@@ -149,7 +166,7 @@ const FlightList = () => {
                     </div>
                     <Button
                       variant="outline-primary"
-                      onClick={() => handleShowModal(flight)}
+                      onClick={() => handleShowModal(flight.vuelos)}
                     >
                       Ver detalles
                     </Button>
@@ -177,14 +194,16 @@ const FlightList = () => {
             </Modal.Header>
             <Modal.Body>
               {modalContent && (
-                <>
-                  <p><strong>Origen:</strong> {modalContent.origin?.name} ({modalContent.origin?.code})</p>
-                  <p><strong>Destino:</strong> {modalContent.destination?.name} ({modalContent.destination?.code})</p>
-                  <p><strong>Duración:</strong> {modalContent.duration}</p>
-                  <p><strong>Hora de salida:</strong> {modalContent.departure_time}</p>
-                  <p><strong>Hora de llegada:</strong> {modalContent.arrival_time}</p>
-                </>
-              )}
+                 modalContent.map((flight) => (
+                 <div key={flight.id}>
+                   <p><strong>Origen:</strong> {flight.origin} </p>
+                  <p><strong>Destino:</strong> {flight.destination} </p>
+                  {/* <p><strong>Duración:</strong> {flight.duration}</p> */}
+                  <p><strong>Hora de salida:</strong> {flight.departure_time}</p>
+                  <p><strong>Hora de llegada:</strong> {flight.arrival_time}</p> 
+                    <hr />
+                </div>
+              )))}
             </Modal.Body>
             <Modal.Footer>
               <Button variant="primary"  onClick={handleSelectFlight}>
@@ -195,6 +214,8 @@ const FlightList = () => {
               </Button>
             </Modal.Footer>
           </Modal>
+
+
         </Container>
       </div>
     </>
@@ -202,4 +223,4 @@ const FlightList = () => {
 };
 
 export default FlightList;
- 
+

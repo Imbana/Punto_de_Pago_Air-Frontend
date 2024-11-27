@@ -116,8 +116,9 @@ body {
 }
 
 .header {
-    margin: 20px auto;
+    padding: 10px auto;
     display: flex;
+    background: #000055;
     justify-content: flex-start;
     align-items: center;
     /* max-width: 1200px; */
@@ -318,4 +319,11 @@ body {
     color: #6e6e6e;
     padding: 1rem;
     text-align: center;
+}
+
+.containerCards{
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    margin-top: 20px;
 }

@@ -7,7 +7,7 @@ export const useStoreFlight = create(persist((set) => ({
         information: {}
     })),
     info_flight: (flight) => set((state) => ({
-        information: { ...state,  "origin": flight.origin, "destination": flight.destination, "date": flight.date }
+        information: { ...state.information,  "origin": flight.origin, "destination": flight.destination, "date": flight.date, "time" : flight.time }
     }))
   }), { name: 'flight-storage' }))
 

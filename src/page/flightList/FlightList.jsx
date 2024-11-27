@@ -2,162 +2,84 @@ import { useState, useEffect } from 'react';
 import { Card, Container, Row, Col, Modal, Button } from 'react-bootstrap';
 import { MdFlight } from 'react-icons/md';
 import { useSearchParams } from "react-router";
+import {useStoreFlight} from  '../../store/store'
+import { useNavigate } from "react-router-dom";
 import logo from '../../assets/logo.png';
 import axios from 'axios';
- 
-const dataList = {
-  "direct_flights": [
-    {
-      "id": 1,
-      "origin": {
-        "code": "BOG",
-        "name": "Bogotá"
-      },
-      "destination": {
-        "code": "MDE",
-        "name": "Medellín"
-      },
-      "departure_time": "06:00:00",
-      "arrival_time": "07:30:00",
-      "days_of_week": ["Monday", "Wednesday", "Friday"],
-      "duration": "1 horas, 30 minutos"
-    }
-  ],
-  "routes_with_stops": [ {
-    "id": 1,
-    "origin": {
-      "code": "BOG",
-      "name": "Bogotá"
-    },
-    "destination": {
-      "code": "CTG",
-      "name": "Cartagena"
-    },
-    "flights": [
-      {
-        "departure_time": "08:00:00",
-        "arrival_time": "09:30:00",
-        "origin": "BOG",
-        "destination": "MDE",
-        "duration": "1 horas, 30 minutos"
-      },
-      {
-        "departure_time": "10:30:00",
-        "arrival_time": "12:00:00",
-        "origin": "MDE",
-        "destination": "CTG",
-        "duration": "1 horas, 30 minutos"
-      }
-    ],
-    "total_duration": "4 horas, 0 minutos",
-    "days_of_week": ["Tuesday", "Thursday", "Saturday"]
-  },
-  {
-    "id": 2,
-    "origin": {
-      "code": "BOG",
-      "name": "Bogotá"
-    },
-    "destination": {
-      "code": "CLO",
-      "name": "Cali"
-    },
-    "flights": [
-      {
-        "departure_time": "07:00:00",
-        "arrival_time": "08:30:00",
-        "origin": "BOG",
-        "destination": "BAQ",
-        "duration": "1 horas, 30 minutos"
-      },
-      {
-        "departure_time": "09:30:00",
-        "arrival_time": "11:00:00",
-        "origin": "BAQ",
-        "destination": "CLO",
-        "duration": "1 horas, 30 minutos"
-      }
-    ],
-    "total_duration": "4 horas, 0 minutos",
-    "days_of_week": ["Monday", "Wednesday", "Friday"]
-  },
-  {
-    "id": 3,
-    "origin": {
-      "code": "BOG",
-      "name": "Bogotá"
-    },
-    "destination": {
-      "code": "SMR",
-      "name": "Santa Marta"
-    },
-    "flights": [
-      {
-        "departure_time": "05:00:00",
-        "arrival_time": "06:30:00",
-        "origin": "BOG",
-        "destination": "MDE",
-        "duration": "1 horas, 30 minutos"
-      },
-      {
-        "departure_time": "07:30:00",
-        "arrival_time": "09:00:00",
-        "origin": "MDE",
-        "destination": "SMR",
-        "duration": "1 horas, 30 minutos"
-      }
-    ],
-    "total_duration": "4 horas, 0 minutos",
-    "days_of_week": ["Sunday"]
-  }]
-};
- 
+
+import {getWeekDays} from "../../helpers/utiils"
+
+
+
 const FlightList = () => {
-  const [results, setResults] = useState(dataList);
+  const [results, setResults] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState({});
-  const [selectedDay, setSelectedDay] = useState("Monday");
   const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
- 
+  const { info_flight } = useStoreFlight()
   const origin = searchParams.get('origin');
   const destination = searchParams.get('destination');
   const date = searchParams.get('date');
+  const navigate = useNavigate();
  
   const handleShowModal = (flight) => {
     setModalContent(flight);
     setShowModal(true);
   };
- 
+
   const handleCloseModal = () => {
     setShowModal(false);
     setModalContent({});
   };
- 
+
+  const handleSelectFlight = () => {
+
+    info_flight({
+      "origin": modalContent.origin?.code,
+      "destination": modalContent.origin?.code,
+      "time":modalContent.departure_time,
+      "date": date
+    })
+    navigate('/userReservation');
+  };
   useEffect(() => {
     setLoading(true);
- 
     const fetchFlightList = async () => {
       try {
-        // Uncomment and update API logic here if needed
-        // const response = await axios.get('/api/flights', {
-        //   params: { origin, destination, date }
-        // });
-        // setResults(response.data);
+
+        const response = await axios.get('http://127.0.0.1:9696/api/flights/search', {
+          params: { origin, destination, date }
+        });
+
+        console.log(response.data.direct_flights)
+        setResults(response.data.direct_flights);
+
       } catch (err) {
         console.error('Error fetching flights:', err);
       } finally {
         setLoading(false);
       }
     };
- 
+
     fetchFlightList();
   }, [date, destination, origin]);
- 
-  const filteredFlights = results.direct_flights.filter(flight =>
-    flight.days_of_week.includes(selectedDay)
-  );
- 
+
+  const [selectedDate, setSelectedDate] = useState(date);
+
+  
+
+  const weekDays = getWeekDays(selectedDate);
+
+  const handleDayClick = (date) => {
+      setSelectedDate(date);
+      setSearchParams({
+          origin,
+          destination,
+          date, // Actualiza la URL con la nueva fecha
+      });
+  };
+
   return (
     <>
       {loading && (
@@ -170,36 +92,40 @@ const FlightList = () => {
           </div>
         </div>
       )}
-<header className="header mb-4">
-                <img
-                    src={logo}
-                    width="150"
-                    height="60"
-                    alt="Logo Portal de Pago Air"
-                    className="logo-left"
-                />
-            </header>
+      <header className="header mb-4">
+        <img
+          src={logo}
+          width="150"
+          height="60"
+          alt="Logo Portal de Pago Air"
+          className="logo-left"
+        />
+      </header>
       <div className="results-container">
         <Container className="mt-5 mb-5">
           <h2 className="mb-5">Vuelos desde {origin} hacia {destination}</h2>
- 
+
           {/* Day Selector */}
           <div className="day-selector d-flex justify-content-between mb-4">
-            {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((day) => (
-              <button
-                key={day}
-                className={`btn ${day === selectedDay ? 'btn-primary' : 'btn-outline-primary'}`}
-                onClick={() => setSelectedDay(day)}
-              >
-                {day}
-              </button>
-            ))}
+            {weekDays.map((date) => {
+              const dayName = new Intl.DateTimeFormat('es-CO', { weekday: 'long' }).format(new Date(date + 'T00:00:00-05:00'));
+
+              return (
+                <button
+                  key={date}
+                  className={`btn ${date === selectedDate ? 'btn-primary' : 'btn-outline-primary'}`}
+                  onClick={() => handleDayClick(date)}
+                >
+                  {dayName} ({date})
+                </button>
+              );
+            })}
           </div>
- 
+
           {/* Flights */}
           <Row className="g-4">
-            {filteredFlights.length > 0 ? (
-              filteredFlights.map((flight, index) => (
+            {results.length > 0 ? (
+              results.map((flight, index) => (
                 <Col key={index} xs={12}>
                   <Card className="card-flight">
                     <div className="d-flex justify-content-between align-items-center mb-3">
@@ -236,14 +162,14 @@ const FlightList = () => {
                   <Card.Body>
                     <Card.Title className='text-dark display-5 fw-bold'>No hay vuelos disponibles</Card.Title>
                     <Card.Text>
-                      <p className='badge bg-danger'>Intenta con otra fecha o destino.</p>
+                      <span className='badge bg-danger'>Intenta con otra fecha o destino.</span>
                     </Card.Text>
                   </Card.Body>
                 </Card>
               </div>
             )}
           </Row>
- 
+
           {/* Modal */}
           <Modal show={showModal} onHide={handleCloseModal}>
             <Modal.Header closeButton>
@@ -261,6 +187,9 @@ const FlightList = () => {
               )}
             </Modal.Body>
             <Modal.Footer>
+              <Button variant="primary"  onClick={handleSelectFlight}>
+                Seleccionar
+              </Button>
               <Button variant="secondary" onClick={handleCloseModal}>
                 Cerrar
               </Button>
@@ -271,6 +200,6 @@ const FlightList = () => {
     </>
   );
 };
- 
+
 export default FlightList;
  

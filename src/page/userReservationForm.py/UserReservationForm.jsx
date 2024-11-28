@@ -1,15 +1,20 @@
+import { useState } from "react";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
 import logo from '../../assets/logo.png';
-import imgFlight from '../../assets/avion.png'
+import imgFlight from '../../assets/avion.png';
 import { useNavigate } from "react-router-dom";
 import { useForm } from 'react-hook-form';
 import { useStoreFlight } from '../../store/store';
-
-import { dataReservation } from "../../helpers/utils"
+import axios from "axios";
+import { dataReservation } from "../../helpers/utils";
 
 const UserReservationForm = () => {
     const navigate = useNavigate();
     const { information } = useStoreFlight();
+    const [currentPassenger, setCurrentPassenger] = useState(0); // Controla qué formulario se muestra
+    const [passengersData, setPassengersData] = useState(
+        Array(information.passengers.adults + information.passengers.children + information.passengers.babies).fill({})
+    );
 
     const {
         register,
@@ -18,31 +23,34 @@ const UserReservationForm = () => {
         reset
     } = useForm();
 
+    const handleNext = (data) => {
+        const updatedData = [...passengersData];
+        updatedData[currentPassenger] = data; // Guarda los datos del pasajero actual
+        setPassengersData(updatedData);
+
+        if (currentPassenger < passengersData.length - 1) {
+            setCurrentPassenger(currentPassenger + 1); // Pasa al siguiente formulario
+            reset(); // Limpia el formulario
+        }
+    };
+
+    const handlePrevious = () => {
+        setCurrentPassenger(currentPassenger - 1); // Retrocede al formulario anterior
+    };
+
     const onSubmit = async (data) => {
+        const updatedData = [...passengersData];
+        updatedData[currentPassenger] = data; // Guarda los datos del último pasajero
+        setPassengersData(updatedData);
+
         try {
-            console.log("Formulario enviado:", data);
+            const dataEndpoint = dataReservation(information.flight, updatedData); // Prepara datos para el API
+            const response = await axios.post('https://cantozil.pythonanywhere.com/api/bookings/', dataEndpoint);
 
-            // Preparar datos para enviar al backend
-            const dataEndpoint = dataReservation(information.flight, data);
-            console.log("Datos preparados para la API:", dataEndpoint);
-
-            // Enviar datos al backend
-            const response = await fetch(' http://127.0.0.1:9696/api/bookings', { 
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(dataEndpoint),
-            });
-
-            const result = await response.json(); // Convertir la respuesta en JSON
-            console.log("Respuesta del servidor:", result);
-
-            // Verificar si la reserva fue exitosa
-            if (response.ok && result.id) {
-                alert(`Reserva creada con éxito. Tu ID de reserva es: ${result.id}`);
-                reset(); // Limpiar formulario
-                navigate("/userConsultation"); // Navegar a la vista de consulta
+            if (response.data) {
+                reset(); // Limpia todo
+                const params = new URLSearchParams({ id: response.data.id, email: response.data.passengers[0].email });
+                navigate(`/userConsultation?${params.toString()}`);
             } else {
                 alert('Error al realizar la reserva. Intenta de nuevo.');
             }
@@ -79,8 +87,8 @@ const UserReservationForm = () => {
                 <Row className="align-items-center">
                     {/* Formulario a la izquierda */}
                     <Col md={6}>
-                        <h2 className="mb-4">Formulario de Reserva</h2>
-                        <Form onSubmit={handleSubmit(onSubmit)}>
+                        <h2 className="mb-4">Formulario de Reserva - Pasajero {currentPassenger + 1}</h2>
+                        <Form onSubmit={handleSubmit(currentPassenger === passengersData.length - 1 ? onSubmit : handleNext)}>
                             <Row className="mb-3">
                                 <Col md={6}>
                                     <Form.Group controlId="formFirstName" className="mb-3">
@@ -249,9 +257,15 @@ const UserReservationForm = () => {
                                 </Col>
                             </Row>
 
-                            <div className="text-center">
+                            {/* Botones de navegación */}
+                            <div className="d-flex justify-content-between mt-4">
+                                {currentPassenger > 0 && (
+                                    <Button variant="secondary" onClick={handlePrevious}>
+                                        Anterior
+                                    </Button>
+                                )}
                                 <Button variant="primary" type="submit">
-                                    Hacer Reserva
+                                    {currentPassenger === passengersData.length - 1 ? 'Enviar Reserva' : 'Siguiente'}
                                 </Button>
                             </div>
                         </Form>
@@ -271,6 +285,6 @@ const UserReservationForm = () => {
             </Container>
         </>
     );
-}
+};
 
 export default UserReservationForm;

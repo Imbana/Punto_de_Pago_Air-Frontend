@@ -1,16 +1,14 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import logo from '../../assets/logo.png';
-import { Form, Button, InputGroup, FormControl, Container, } from 'react-bootstrap';
-import { MdFlightTakeoff, MdFlightLand, MdDateRange } from 'react-icons/md';
+import { Form, Button, InputGroup, FormControl, Container, Modal } from 'react-bootstrap';
+import { MdFlightTakeoff, MdFlightLand, MdDateRange, MdGroup } from 'react-icons/md';
 import './flightSearch.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {useStoreFlight} from  '../../store/store'
-import CardSearch from "../../components/CardSearch" 
+import { useStoreFlight } from '../../store/store'
+import CardSearch from "../../components/CardSearch"
 import caliImg from "../../assets/cali.jpg"
 import medellinImg from "../../assets/medellin.jpg"
-
-
 
 const cards = [{
         "city": "Cali",
@@ -26,68 +24,50 @@ const cards = [{
     },
 ]
 
-
 const FlightSearch = () => {
-    const [airports, setAirports] = useState([])
+    const [airports, setAirports] = useState([]);
     const [origin, setOrigin] = useState('');
     const [destination, setDestination] = useState('');
     const [date, setDate] = useState('');
-    const { start_flight } = useStoreFlight()
-    const handleOriginChange = (e) => {
-        const selectedOrigin = e.target.value;
-        console.log(selectedOrigin)
-        // If the selected origin is the same as current destination, reset destination
-        if (selectedOrigin === destination) {
-            setDestination('');
-        } 
-        setOrigin(selectedOrigin);
-    };
+    const [passengers, setPassengers] = useState({ adults: 1, children: 0, babies: 0 }); // Pasajeros
+    const [showModal, setShowModal] = useState(false); // Estado para el modal
+    const { start_flight } = useStoreFlight();
 
-    const handleDestinationChange = (e) => {
-        const selectedDestination = e.target.value;
-        
-        // If the selected destination is the same as current origin, reset origin
-        if (selectedDestination === origin) {
-            setOrigin('');
-        }
-        
-        setDestination(selectedDestination);
+    const handlePassengersChange = (type, operation) => {
+        setPassengers((prev) => {
+            const value = operation === 'increase' ? prev[type] + 1 : prev[type] - 1;
+            if (type === 'adults' && (value < 0 || value > 9)) return prev; // Mínimo 1 adulto
+            if (type === 'children' && (value < 0 || value > 2)) return prev; // Niños 0-9
+            if (type === 'babies' && (value < 0 || value > 2)) return prev; // Bebés 0-2
+            return { ...prev, [type]: value };
+        });
     };
-
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
         const searchParams = new URLSearchParams({
             origin: origin,
             destination: destination,
-            date: date
+            date: date,
+            adults: passengers.adults,
+            children: passengers.children,
+            babies: passengers.babies
         });
-
-
-  
         window.open(`/flightList?${searchParams.toString()}`);
     };
 
     useEffect(() => {
         const fetchAirports = async () => {
             try {
-                start_flight()
+                start_flight();
                 const response = await axios.get('https://cantozil.pythonanywhere.com/api/airports/');
-                console.log(response)
-
-                // const data = [{"code": "sdfsd", "name": "Hola cimo est"}, {"code": "sdfsd43", "name": "Hola cimo est434"}]
                 setAirports(response.data);
-
-
             } catch (err) {
                 console.error('Error fetching airports:', err);
             }
         };
         fetchAirports();
     }, [start_flight]);
-
-
 
     return (
         <>
@@ -113,50 +93,38 @@ const FlightSearch = () => {
                                     <InputGroup.Text>
                                         <MdFlightTakeoff />
                                     </InputGroup.Text>
-
-                                    <Form.Select aria-label="Default select example"
+                                    <Form.Select
                                         placeholder="Origen"
                                         value={origin}
-                                        onChange={handleOriginChange}
+                                        onChange={(e) => setOrigin(e.target.value)}
                                         required
-                                        
                                     >
-                                        <option disabled value="" >Selecciona Origen</option>
+                                        <option disabled value="">Selecciona Origen</option>
                                         {airports.map((airport) => (
-                                                <option
-                                                    key={airport.code}
-                                                    value={airport.code}>
-                                                    {airport.name} - {airport.code}
-                                                </option>
-                                            ))}
+                                            <option key={airport.code} value={airport.code}>
+                                                {airport.name} - {airport.code}
+                                            </option>
+                                        ))}
                                     </Form.Select>
-         
                                 </InputGroup>
 
                                 <InputGroup className="mb-3" style={{ maxWidth: '260px' }}>
                                     <InputGroup.Text>
                                         <MdFlightLand />
                                     </InputGroup.Text>
-        
-
-                                    <Form.Select aria-label="Default select example"
-                                            placeholder="Destino"
-                                            value={destination}
-                                            onChange={handleDestinationChange}            
-                                            required
-
-                                        >
-                                        <option value=""  disabled>Selecciona Destino</option>
+                                    <Form.Select
+                                        placeholder="Destino"
+                                        value={destination}
+                                        onChange={(e) => setDestination(e.target.value)}
+                                        required
+                                    >
+                                        <option disabled value="">Selecciona Destino</option>
                                         {airports.map((airport) => (
-                                                <option
-                                                    key={airport.code}
-                                                    value={airport.code}
-                                                    >
-                                                    {airport.name} - {airport.code}
-                                                </option>
-                                            ))}
+                                            <option key={airport.code} value={airport.code}>
+                                                {airport.name} - {airport.code}
+                                            </option>
+                                        ))}
                                     </Form.Select>
-
                                 </InputGroup>
 
                                 <InputGroup className="mb-3" style={{ maxWidth: '200px' }}>
@@ -171,32 +139,64 @@ const FlightSearch = () => {
                                     />
                                 </InputGroup>
 
+                                <Button variant="secondary" onClick={() => setShowModal(true)} className="mb-3">
+                                    <MdGroup /> {passengers.adults + passengers.children + passengers.babies} pasajeros
+                                </Button>
+
                                 <Button
                                     type="submit"
                                     className="mb-3 btn-search"
-                            
                                 >
                                     Buscar
                                 </Button>
                             </div>
                         </Form>
-
                     </div>
                 </Container>
             </div>
 
+            <Modal show={showModal} onHide={() => setShowModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>¿Quiénes vuelan?</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {['adults', 'children', 'babies'].map((type, index) => (
+                        <div key={index} className="d-flex justify-content-between align-items-center mb-3">
+                            <span>
+                                {type === 'adults' ? 'Adultos' : type === 'children' ? 'Niños' : 'Bebés'}
+                            </span>
+                            <div className="d-flex align-items-center gap-2">
+                                <Button
+                                    variant="outline-secondary"
+                                    onClick={() => handlePassengersChange(type, 'decrease')}
+                                >
+                                    -
+                                </Button>
+                                <span>{passengers[type]}</span>
+                                <Button
+                                    variant="outline-secondary"
+                                    onClick={() => handlePassengersChange(type, 'increase')}
+                                >
+                                    +
+                                </Button>
+                            </div>
+                        </div>
+                    ))}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="primary" onClick={() => setShowModal(false)}>
+                        Confirmar
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
             <div className="containerCards">
-                {
-                    cards.map(item => (
-                        <CardSearch key={item.city} data={item}/>
-                    ))
-                }
+                {cards.map((item) => (
+                    <CardSearch key={item.city} data={item} />
+                ))}
             </div>
-
-
         </>
+    );
+};
 
-    )
-}
-
-export default FlightSearch
+export default FlightSearch;

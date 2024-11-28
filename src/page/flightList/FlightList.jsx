@@ -6,10 +6,9 @@ import { useStoreFlight } from '../../store/store'
 import { useNavigate } from "react-router-dom";
 import logo from '../../assets/logo.png';
 import axios from 'axios';
-import { processFlightData } from "../../helpers/utils"
+
 
 import { getWeekDays } from "../../helpers/utils"
-
 
 
 const FlightList = () => {
@@ -19,9 +18,11 @@ const FlightList = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const { info_flight } = useStoreFlight()
+
   const origin = searchParams.get('origin');
   const destination = searchParams.get('destination');
   const date = searchParams.get('date');
+
   const navigate = useNavigate();
   
 
@@ -49,12 +50,7 @@ const FlightList = () => {
           params: { origin, destination, date }
         });
 
-        // const dataResponse = processFlightData(response.data)
-        console.log("response")
-        console.log(response)
-
         setResults(response.data);
-        // console.log(data)
 
       } catch (err) {
         console.error('Error fetching flights:', err);

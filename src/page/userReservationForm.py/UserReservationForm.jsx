@@ -5,6 +5,7 @@ import imgFlight from '../../assets/avion.png'
 import { useNavigate } from "react-router-dom";
 import { useForm } from 'react-hook-form';
 import { useStoreFlight } from '../../store/store';
+import axios from "axios";
 
 import {dataReservation} from "../../helpers/utils"
 
@@ -22,26 +23,19 @@ const UserReservationForm = () => {
 
     const onSubmit = async (data) => {
         try {
-            console.log("data")
-            console.log(data)
-            console.log(data)
+
 
 
             // Replace with your actual API endpoint
             const dataEndpoint = dataReservation(information.flight, data)
-            // const response = await axios.post('/api/reservations', dataEndpoint);
-            console.log("dataEndpoint")
-            console.log(dataEndpoint)
-            alert('todo perfecto');
+            const response = await axios.post('https://cantozil.pythonanywhere.com/api/bookings/', dataEndpoint);
             
-
-            const response = { "data": [2, 5, 4] }
-
             // Successful reservation
             if (response.data) {
 
                 reset(); // Clear form
-                navigate("/userConsultation");
+                const params = new URLSearchParams({ id: response.data.id , email : response.data.passengers[0].email});
+                navigate(`/userConsultation?${params.toString()}`);
             } else {
                 alert('Error al realizar la reserva');
             }

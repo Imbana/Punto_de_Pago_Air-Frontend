@@ -20,9 +20,10 @@ export const getWeekDays = (baseDate) => {
 };
 
 
+
 export const dataReservation = (infoFlight, inforUser) => {
 
-    let infoPassengers = {
+    const  infoPassengers = {
         "first_name": inforUser.firstName,
         "last_name": inforUser.lastName,
         "email": inforUser.email,
@@ -30,16 +31,15 @@ export const dataReservation = (infoFlight, inforUser) => {
         "is_infant": false
     }
 
-    let flights = infoFlight.map((flight) => ({
-        "flight_id": flight.id// Asignar un ID numérico basado en la posición
-    }));
-    let dataResult = {
+    const flights = infoFlight.map((flight) => (flight.id));
 
-        "flights": flights,
+
+    let dataResult = {
+        "seat_class": "economy_class",
+        "flight_id":  String(flights[0]),
         "passengers": [
             infoPassengers
         ],
-        "seat_numbers": ["B2"],
         "luggage_hand": true,
         "luggage_hold": true,
         "extra_luggage": 0,

@@ -29,7 +29,6 @@ const UserConsultationForm = () => {
           params: { email }
         });
 
-
         console.log(response.data)
         if (response.data) {
           setReservation(response.data[0])
@@ -64,6 +63,7 @@ const UserConsultationForm = () => {
 
 
   const handleSearch = () => {
+    console.log('click')
     setSearchParams({
       "id": searchId,
       "email": searchEmail

@@ -7,6 +7,7 @@ import FlightSearch from './page/flightSearch/FlightSearch';
 import FlightList from './page/flightList/FlightList';
 import UserReservationForm from './page/userReservationForm.py/UserReservationForm';
 import UserConsultationForm from './page/userConsultationForm/UserConsultationform';
+import PaymentConfirmation from './page/paymentConfirmation/paymentConfirmation';
 
 function App() {
 
@@ -18,6 +19,7 @@ function App() {
         <Route path="/flightList" element={<FlightList />} />
         <Route path="/userReservation" element={<UserReservationForm />} />
         <Route path="/userConsultation" element={<UserConsultationForm/>} />
+        <Route path="/paymentConfirmation" element={<PaymentConfirmation />} />
       </Routes>
     </BrowserRouter>
   )

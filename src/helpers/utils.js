@@ -22,32 +22,33 @@ export const getWeekDays = (baseDate) => {
 
 
 export const dataReservation = (infoFlight, inforUser) => {
+    // Asegúrate de acceder a infoFlight.flight si es necesario
+    const flightData = Array.isArray(infoFlight.flight) ? infoFlight.flight[0] : infoFlight[0];
 
-    const  infoPassengers = {
-        "first_name": inforUser.firstName,
-        "last_name": inforUser.lastName,
-        "email": inforUser.email,
-        "date_of_birth": inforUser.birthDate,
-        "is_infant": false
+    if (!flightData?.id) {
+        throw new Error("El vuelo no está definido o es inválido.");
     }
 
-    const flights = infoFlight.map((flight) => (flight.id));
+    const passengers = inforUser.passengers.map((passenger) => ({
+        first_name: passenger.firstName,
+        last_name: passenger.lastName,
+        email: passenger.email,
+        date_of_birth: passenger.birthDate,
+        is_infant: passenger.birthDate && new Date().getFullYear() - new Date(passenger.birthDate).getFullYear() < 2,
+    }));
+
+    return {
+        seat_class: "economy_class",
+        flight_id: String(flightData.id),
+        passengers,
+        luggage_hand: true,
+        luggage_hold: true,
+        extra_luggage: 0,
+        extra_meal: 0,
+    };
+};
 
 
-    let dataResult = {
-        "seat_class": "economy_class",
-        "flight_id":  String(flights[0]),
-        "passengers": [
-            infoPassengers
-        ],
-        "luggage_hand": true,
-        "luggage_hold": true,
-        "extra_luggage": 0,
-        "extra_meal": 0
-    }
-    return dataResult
-
-}
 
 
 export const  processFlightData = (flights) => {

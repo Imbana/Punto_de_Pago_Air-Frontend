@@ -28,11 +28,26 @@ const FlightList = () => {
   const origin = searchParams.get('origin');
   const destination = searchParams.get('destination');
   const date = searchParams.get('date');
+  const adults = searchParams.get('adults');
+  const children = searchParams.get('children');
+  const babies = searchParams.get('babies');
+
 
   const navigate = useNavigate();
 
   const handleSelectClass = (flight) => {
-    info_flight(flight)
+    const flightAndFilters = {
+      flight: flight,
+      filters: {
+        origen: origin,
+        destination: destination,
+        date: date,
+        adults: adults,
+        children: children,
+        babies: babies
+      }
+    }
+    info_flight(flightAndFilters)
     navigate('/userReservation', { replace: true });
   }
 

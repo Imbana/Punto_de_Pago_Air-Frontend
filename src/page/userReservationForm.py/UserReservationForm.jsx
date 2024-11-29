@@ -2,7 +2,7 @@ import { Form, Button, Container, Row, Col } from "react-bootstrap";
 import logo from '../../assets/logo.png';
 import imgFlight from '../../assets/avion.png';
 import { useNavigate } from "react-router-dom";
-import { useForm, useFieldArray } from 'react-hook-form'; 
+import { useForm, useFieldArray } from 'react-hook-form';
 import { useStoreFlight } from '../../store/store';
 import axios from "axios";
 
@@ -26,7 +26,7 @@ const UserReservationForm = () => {
         reset
     } = useForm({
         defaultValues: {
-            passengers: [...Array(passengersCount).keys()].map(() => ({
+            passengers: [...Array(passengersCount).keys()].map((index) => ({
                 firstName: '',
                 lastName: '',
                 gender: '',
@@ -34,7 +34,8 @@ const UserReservationForm = () => {
                 birthDate: '',
                 phone: '',
                 documentType: '',
-                documentNumber: ''
+                documentNumber: '',
+                type: index < adults ? 'adult' : index < adults + children ? 'child' : 'baby'
             }))
         }
     });
@@ -45,22 +46,22 @@ const UserReservationForm = () => {
         name: "passengers", // Nombre para los datos del array
         keyName: "id" // Para identificar dinámicamente los elementos
     });
-    
+
     const onSubmit = async (data) => {
         try {
             console.log("Datos del formulario:", data);
             console.log("Información del vuelo:", information.flight);
-    
-            if (!information.flight ) {
+
+            if (!information.flight) {
                 alert("No se encontró información del vuelo. Por favor, selecciona un vuelo válido.");
                 return;
             }
-    
+
             const dataEndpoint = dataReservation(information.flight, data);
             console.log("Datos enviados al servidor:", dataEndpoint);
-    
+
             const response = await axios.post('https://cantozil.pythonanywhere.com/api/bookings/', dataEndpoint);
-    
+
             if (response.data) {
                 reset();
                 const params = new URLSearchParams({ id: response.data.id, email: response.data.passengers[0].email });
@@ -73,7 +74,7 @@ const UserReservationForm = () => {
             alert(`Ocurrió un error: ${error.message}`);
         }
     };
-    
+
     const goToReservationLookup = () => {
         navigate("/userConsultation");
     };
@@ -106,7 +107,7 @@ const UserReservationForm = () => {
                             {/* Generar secciones dinámicas según el número de pasajeros */}
                             {fields.map((item, index) => (
                                 <div key={item.id} className="mb-4">
-                                    <h5>Pasajero {index + 1}</h5>
+                                    <h5>Pasajero {index + 1} ({item.type === 'adult' ? 'Adulto' : item.type === 'child' ? 'Niño' : 'Bebé'})</h5>
                                     <Row>
                                         <Col md={6}>
                                             <Form.Group controlId={`formFirstName${index}`} className="mb-3">
@@ -149,7 +150,6 @@ const UserReservationForm = () => {
                                             </Form.Group>
                                         </Col>
                                     </Row>
-                                    {/* Otros campos (género, correo, etc.) para este pasajero */}
                                     <Row>
                                         <Col md={6}>
                                             <Form.Group controlId={`formGender${index}`} className="mb-3">
@@ -203,6 +203,13 @@ const UserReservationForm = () => {
                                                         validate: value =>
                                                             (new Date(value) <= new Date()) || 'La fecha no puede ser en el futuro'
                                                     })}
+                                                    max={
+                                                        item.type === 'adult'
+                                                            ? new Date(new Date().getFullYear() - 18, new Date().getMonth(), new Date().getDate()).toISOString().split('T')[0]
+                                                            : item.type === 'child'
+                                                                ? new Date(new Date().getFullYear() - 12, new Date().getMonth(), new Date().getDate()).toISOString().split('T')[0]
+                                                                : new Date(new Date().getFullYear() - 2, new Date().getMonth(), new Date().getDate()).toISOString().split('T')[0]
+                                                    }
                                                     isInvalid={!!errors?.passengers?.[index]?.birthDate}
                                                 />
                                                 <Form.Control.Feedback type="invalid">

@@ -1,5 +1,3 @@
-
-
 body {
     font-family: 'Poppins', sans-serif;
     margin: 0px;
@@ -321,13 +319,13 @@ body {
     text-align: center;
 }
 
-.containerCards{
+.containerCards {
     display: flex;
     justify-content: center;
     gap: 50px;
     margin-top: 20px;
 }
 
-.day-selector{
+.day-selector {
     gap: 10px;
 }

@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Card, Container, Row, Col, Modal, Button } from 'react-bootstrap';
+import { Card, Container, Row, Col, Modal, Button, Accordion } from 'react-bootstrap';
+import { PiSeatLight, PiSuitcaseRollingLight } from "react-icons/pi";
 import { MdFlight } from 'react-icons/md';
+import './flighList.css';
+
 import { useSearchParams } from "react-router";
 import { useStoreFlight } from '../../store/store'
 import { useNavigate } from "react-router-dom";
@@ -9,6 +12,9 @@ import axios from 'axios';
 
 
 import { getWeekDays } from "../../helpers/utils"
+import { BsBackpack3 } from 'react-icons/bs';
+import { LuBaggageClaim } from 'react-icons/lu';
+import { FaPlaneCircleCheck } from 'react-icons/fa6';
 
 
 const FlightList = () => {
@@ -24,23 +30,18 @@ const FlightList = () => {
   const date = searchParams.get('date');
 
   const navigate = useNavigate();
-  
+
 
   const handleShowModal = (flight) => {
     setModalContent(flight);
     setShowModal(true);
   };
 
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setModalContent([]);
-  };
+  const handleSelectClass = (flight) => {
+    info_flight(flight)
+    navigate('/userReservation', { replace: true });
+  }
 
-  const handleSelectFlight = () => {
-
-    info_flight(modalContent)
-    navigate('/userReservation',{ replace: true });
-  };
   useEffect(() => {
     setLoading(true);
     const fetchFlightList = async () => {
@@ -50,6 +51,7 @@ const FlightList = () => {
           params: { origin, destination, date }
         });
 
+        console.log(response.data)
         setResults(response.data);
 
       } catch (err) {
@@ -100,23 +102,25 @@ const FlightList = () => {
       </header>
       <div className="results-container">
         <Container className="mt-5 mb-5">
-          <h2 className="mb-5">Vuelos desde {origin} hacia {destination}</h2>
+          <h2 className="mb-4">Vuelos desde {origin} hacia {destination}</h2>
 
           {/* Day Selector */}
-          <div className="day-selector d-flex justify-content-between mb-4 px-2">
-            {weekDays.map((date) => {
-              const dayName = new Intl.DateTimeFormat('es-CO', { weekday: 'long' }).format(new Date(date + 'T00:00:00-05:00'));
+          <div className="mt-2">
+            <div className='day-selector overflow-x-auto d-flex d- justify-content-between mb-4 px-2'>
+              {weekDays.map((date) => {
+                const dayName = new Intl.DateTimeFormat('es-CO', { weekday: 'long' }).format(new Date(date + 'T00:00:00-05:00'));
 
-              return (
-                <button
-                  key={date}
-                  className={`btn ${date === selectedDate ? 'btn-primary' : 'btn-outline-primary'}`}
-                  onClick={() => handleDayClick(date)}
-                >
-                  {dayName} ({date})
-                </button>
-              );
-            })}
+                return (
+                  <button
+                    key={date}
+                    className={`btn ${date === selectedDate ? 'btn-primary' : 'btn-outline-primary'}`}
+                    onClick={() => handleDayClick(date)}
+                  >
+                    {dayName} ({date})
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* Flights */}
@@ -160,12 +164,109 @@ const FlightList = () => {
                       </div>
                       <div className="flight-duration">{flight.duration}</div>
                     </div>
-                    <Button
-                      variant="outline-primary"
-                      onClick={() => handleShowModal(flight.vuelos)}
-                    >
-                      Ver detalles
-                    </Button>
+
+                    <Accordion defaultActiveKey={0}>
+                      <Accordion.Header variant="outline-primary" className='center-text-accordion-button btn-outline-primary'>
+                        Elige como quieres volar
+                      </Accordion.Header>
+                      <Accordion.Body>
+                        <div className="container">
+                          <h2 className="text-center">Nuestros Planes</h2>
+                          <Row className="row-cols-1 row-cols-md-3 g-4">
+                            {/* Clase Económica */}
+                            <Col>
+                              <Card className='shadow-sm'>
+                                <Card.Body className='card-body'>
+                                  <Card.Title className='text-center'>Económico</Card.Title>
+                                  <Card.Subtitle className='text-center mb-3'>$300.000</Card.Subtitle>
+                                  <ul className="list-unstyled">
+                                    <li>
+                                      <BsBackpack3 className='red-icon' /> 1 artículo personal (bolso)
+                                    </li>
+                                    <li>
+                                      <PiSuitcaseRollingLight className='red-icon' /> 1 equipaje de mano (10 kg)
+                                    </li>
+                                    <li>
+                                      <LuBaggageClaim className='red-icon' /> 1 equipaje de bodega (23 kg)
+                                    </li>
+                                    <li>
+                                      <FaPlaneCircleCheck className='red-icon' /> Check-in en aeropuerto
+                                    </li>
+                                    <li>
+                                      <PiSeatLight className='red-icon' /> Asiento Economy incluido
+                                    </li>
+                                  </ul>
+
+                                </Card.Body>
+                                <Button variant='primary' block='true' className='btn' onClick={() => handleSelectClass(flight.vuelos)}>Seleccionar</Button>
+                                <Card.Text className='gray-label'>Precio por pasajero</Card.Text>
+                              </Card>
+                            </Col>
+
+                            {/* Clase Ejecutiva */}
+                            <Col>
+                              <Card className='shadow-sm'>
+                                <Card.Body className='card-body'>
+                                  <Card.Title className='text-center'>Ejecutiva</Card.Title>
+                                  <Card.Subtitle className='text-center mb-3'>$330.000</Card.Subtitle>
+                                  <ul className="list-unstyled">
+                                    <li>
+                                      <BsBackpack3 className='orange-icon' /> 1 artículo personal (bolso)
+                                    </li>
+                                    <li>
+                                      <PiSuitcaseRollingLight className='orange-icon' /> 1 equipaje de mano (10 kg)
+                                    </li>
+                                    <li>
+                                      <LuBaggageClaim className='orange-icon' /> 1 equipaje de bodega (23 kg)
+                                    </li>
+                                    <li>
+                                      <FaPlaneCircleCheck className='orange-icon' /> Check-in en aeropuerto
+                                    </li>
+                                    <li>
+                                      <PiSeatLight className='orange-icon' /> Asiento Ejecutivo incluido
+                                    </li>
+                                  </ul>
+
+                                </Card.Body>
+                                <Button variant='primary' block='true' className='btn' onClick={() => handleSelectClass(flight.vuelos)}>Seleccionar</Button>
+                                <Card.Text className='gray-label'>Precio por pasajero</Card.Text>
+                              </Card>
+                            </Col>
+
+                            {/* Primera Clase */}
+                            <Col>
+                              <Card className='shadow-sm'>
+                                <Card.Body className='card-body'>
+                                  <Card.Title className='text-center'>Primera Clase</Card.Title>
+                                  <Card.Subtitle className='text-center mb-3'>$360.000</Card.Subtitle>
+                                  <ul className="list-unstyled">
+                                    <li>
+                                      <BsBackpack3 className='purple-icon' /> 1 artículo personal (bolso)
+                                    </li>
+                                    <li>
+                                      <PiSuitcaseRollingLight className='purple-icon' /> 1 equipaje de mano (10 kg)
+                                    </li>
+                                    <li>
+                                      <LuBaggageClaim className='purple-icon' /> 1 equipaje de bodega (23 kg)
+                                    </li>
+                                    <li>
+                                      <FaPlaneCircleCheck className='purple-icon' /> Check-in en aeropuerto
+                                    </li>
+                                    <li>
+                                      <PiSeatLight className='purple-icon' /> Asiento Primera Clase Incluido
+                                    </li>
+                                  </ul>
+
+                                </Card.Body>
+                                <Button variant='primary' block='true' className='btn' onClick={() => handleSelectClass(flight.vuelos)}>Seleccionar</Button>
+                                <Card.Text className='gray-label'>Precio por pasajero</Card.Text>
+                              </Card>
+                            </Col>
+                          </Row>
+                        </div>
+                      </Accordion.Body>
+                    </Accordion>
+
                   </Card>
                 </Col>
               ))
@@ -183,37 +284,8 @@ const FlightList = () => {
             )}
           </Row>
 
-          {/* Modal */}
-          <Modal show={showModal} onHide={handleCloseModal}>
-            <Modal.Header closeButton>
-              <Modal.Title>Detalles del vuelo</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              {modalContent && (
-                 modalContent.map((flight) => (
-                 <div key={flight.id}>
-                   <p><strong>Origen:</strong> {flight.origin} </p>
-                  <p><strong>Destino:</strong> {flight.destination} </p>
-                  {/* <p><strong>Duración:</strong> {flight.duration}</p> */}
-                  <p><strong>Hora de salida:</strong> {flight.departure_time}</p>
-                  <p><strong>Hora de llegada:</strong> {flight.arrival_time}</p> 
-                    <hr />
-                </div>
-              )))}
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant="primary"  onClick={handleSelectFlight}>
-                Seleccionar
-              </Button>
-              <Button variant="secondary" onClick={handleCloseModal}>
-                Cerrar
-              </Button>
-            </Modal.Footer>
-          </Modal>
-
-
         </Container>
-      </div>
+      </div >
     </>
   );
 };

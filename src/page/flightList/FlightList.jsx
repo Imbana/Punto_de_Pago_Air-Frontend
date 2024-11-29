@@ -165,15 +165,19 @@ const FlightList = () => {
                       </div>
                     </div>
                     <div className="text-center mb-3">
-                      <div className="flight-type">
+                      <div className="flight-type position-relative">
                         {
                           flight.vuelos.length > 1 ?
                             <span>{flight.vuelos.length - 1} Escalas</span> :
                             <span>Directo</span>
 
                         }
-
+                        <div className="position-absolute text-dark end-0">
+                          <span>Cop </span>
+                          <span className='h2  font-weight-bold ' style={{fontWeight: 700}}>{flight.precio} </span>
+                        </div>
                       </div>
+
                       <div className="d-flex align-items-center justify-content-center mt-3">
                         <div className="flight-details-divider"></div>
                         <MdFlight className="flight-details-icon" />

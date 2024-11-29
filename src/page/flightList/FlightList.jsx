@@ -24,7 +24,7 @@ const FlightList = () => {
   const date = searchParams.get('date');
 
   const navigate = useNavigate();
-  
+
 
   const handleShowModal = (flight) => {
     setModalContent(flight);
@@ -39,7 +39,7 @@ const FlightList = () => {
   const handleSelectFlight = () => {
 
     info_flight(modalContent)
-    navigate('/userReservation',{ replace: true });
+    navigate('/userReservation', { replace: true });
   };
   useEffect(() => {
     setLoading(true);
@@ -190,19 +190,19 @@ const FlightList = () => {
             </Modal.Header>
             <Modal.Body>
               {modalContent && (
-                 modalContent.map((flight) => (
-                 <div key={flight.id}>
-                   <p><strong>Origen:</strong> {flight.origin} </p>
-                  <p><strong>Destino:</strong> {flight.destination} </p>
-                  {/* <p><strong>Duración:</strong> {flight.duration}</p> */}
-                  <p><strong>Hora de salida:</strong> {flight.departure_time}</p>
-                  <p><strong>Hora de llegada:</strong> {flight.arrival_time}</p> 
+                modalContent.map((flight) => (
+                  <div key={flight.id}>
+                    <p><strong>Origen:</strong> {flight.origin} </p>
+                    <p><strong>Destino:</strong> {flight.destination} </p>
+                    {/* <p><strong>Duración:</strong> {flight.duration}</p> */}
+                    <p><strong>Hora de salida:</strong> {flight.departure_time}</p>
+                    <p><strong>Hora de llegada:</strong> {flight.arrival_time}</p>
                     <hr />
-                </div>
-              )))}
+                  </div>
+                )))}
             </Modal.Body>
             <Modal.Footer>
-              <Button variant="primary"  onClick={handleSelectFlight}>
+              <Button variant="primary" onClick={handleSelectFlight}>
                 Seleccionar
               </Button>
               <Button variant="secondary" onClick={handleCloseModal}>

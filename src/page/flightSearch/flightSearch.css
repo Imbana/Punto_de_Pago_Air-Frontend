@@ -1,7 +1,7 @@
 
 
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', sans-serif !important;
     margin: 0px;
 }
 
@@ -11,7 +11,7 @@ body {
 .card-flight,
 .results-container h2,
 .no-flights-card {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', sans-serif !important;
 }
 
 /* flightLoader.css */
@@ -118,7 +118,7 @@ body {
 .header {
     padding: 10px auto;
     display: flex;
-    background: #000055;
+    background: #fff;
     justify-content: flex-start;
     align-items: center;
     /* max-width: 1200px; */
@@ -127,7 +127,7 @@ body {
 
 .hero-section {
     margin: auto 50px;
-    background-image: url("https://www.pasajesaereos.app/blog/wp-content/uploads/2023/11/avion.jpg");
+    background-image: url("../../assets/hero.jpg");
     background-size: cover;
     background-position: center;
     padding: 100px 20px;
@@ -330,4 +330,49 @@ body {
 
 .day-selector{
     gap: 10px;
+}
+
+
+/* selector de dias */
+
+.day-selector-container {
+    margin-top: 20px;
+    margin-bottom: 30px;
+    padding: 10px;
+    background-color: #fafafa;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 20px;
+}
+
+.day-item {
+    flex: 0 0 auto;
+    padding: 10px;
+    margin: 0 5px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    border-radius: 8px;
+}
+
+.day-selected {
+    border: 1px solid green;
+    background-color: #fff;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.day-unselected:hover {
+    border: 1px solid #ddd;
+}
+
+.day-name {
+    font-weight: bold;
+}
+
+.day-price {
+    font-size: 0.9rem;
 }

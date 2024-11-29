@@ -25,6 +25,9 @@ const FlightList = () => {
   const [activeIndex, setActiveIndex] = useState(null)
   const [classflight, setClassFlight] = useState(null)
 
+  const [showModal, setShowModal] = useState(false);
+  const [modalContent, setModalContent] = useState([]);
+
   const origin = searchParams.get('origin');
   const destination = searchParams.get('destination');
   const date = searchParams.get('date');
@@ -35,6 +38,16 @@ const FlightList = () => {
     info_flight(flight)
     navigate('/userReservation', { replace: true });
   }
+
+  const handleShowModal = (flight) => {
+    setModalContent(flight);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setModalContent([]);
+  };
 
   const fetchClassFlight = async (flight) => {
     try {
@@ -168,13 +181,12 @@ const FlightList = () => {
                       <div className="flight-type position-relative">
                         {
                           flight.vuelos.length > 1 ?
-                            <span>{flight.vuelos.length - 1} Escalas</span> :
-                            <span>Directo</span>
-
+                            <span onClick={() => handleShowModal(flight.vuelos)} className='link-span'>{flight.vuelos.length - 1} Escala(s)</span> :
+                            <span onClick={() => handleShowModal(flight.vuelos)} className='link-span'>Directo</span>
                         }
                         <div className="position-absolute text-dark end-0">
                           <span>Cop </span>
-                          <span className='h2  font-weight-bold ' style={{fontWeight: 700}}>{flight.precio} </span>
+                          <span className='h2  font-weight-bold ' style={{ fontWeight: 700 }}>{flight.precio} </span>
                         </div>
                       </div>
 
@@ -319,6 +331,32 @@ const FlightList = () => {
               </div>
             )}
           </Row>
+
+          {/* Modal */}
+          <Modal show={showModal} onHide={handleCloseModal}>
+            <Modal.Header closeButton>
+              <Modal.Title>Detalles del vuelo</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              {modalContent && (
+                modalContent.map((flight) => (
+                  <div key={flight.id}>
+                    <p><strong>Origen:</strong> {flight.origin} </p>
+                    <p><strong>Destino:</strong> {flight.destination} </p>
+                    {/* <p><strong>Duración:</strong> {flight.duration}</p> */}
+                    <p><strong>Hora de salida:</strong> {flight.departure_time}</p>
+                    <p><strong>Hora de llegada:</strong> {flight.arrival_time}</p>
+                    <hr />
+                  </div>
+                )))}
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleCloseModal}>
+                Cerrar
+              </Button>
+            </Modal.Footer>
+          </Modal>
+
 
         </Container>
       </div >

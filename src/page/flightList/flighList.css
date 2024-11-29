@@ -90,3 +90,10 @@
 .purple-icon {
     color: #b50080;
 }
+
+.link-span {
+    color: #0d6efd;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 1rem;
+}

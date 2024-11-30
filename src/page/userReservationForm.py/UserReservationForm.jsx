@@ -17,6 +17,7 @@ const UserReservationForm = () => {
     const babies = parseInt(information.flight.filters.babies || 0);
     const children = parseInt(information.flight.filters.children || 0);
     const passengersCount = adults + children + babies || 1;
+    const seat_class = information.flight.filters.seat_class || 'economy_class';
 
     const {
         register,
@@ -26,6 +27,7 @@ const UserReservationForm = () => {
         reset
     } = useForm({
         defaultValues: {
+            seat_class: seat_class,
             passengers: [...Array(passengersCount).keys()].map((index) => ({
                 firstName: '',
                 lastName: '',
@@ -104,6 +106,7 @@ const UserReservationForm = () => {
                     <Col md={6}>
                         <h2 className="mb-4">Formulario de Reserva</h2>
                         <Form onSubmit={handleSubmit(onSubmit)}>
+                            <Form.Control type="hidden" name="seat_class" value={seat_class} />
                             <Accordion defaultActiveKey="0">
                                 {/* Generar secciones dinámicas según el número de pasajeros */}
                                 {fields.map((item, index) => {

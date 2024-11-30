@@ -1,4 +1,4 @@
-import { Form, Button, Container, Row, Col } from "react-bootstrap";
+import { Form, Button, Container, Row, Col, Accordion } from "react-bootstrap";
 import logo from '../../assets/logo.png';
 import imgFlight from '../../assets/avion.png';
 import { useNavigate } from "react-router-dom";
@@ -104,181 +104,191 @@ const UserReservationForm = () => {
                     <Col md={6}>
                         <h2 className="mb-4">Formulario de Reserva</h2>
                         <Form onSubmit={handleSubmit(onSubmit)}>
-                            {/* Generar secciones dinámicas según el número de pasajeros */}
-                            {fields.map((item, index) => (
-                                <div key={item.id} className="mb-4">
-                                    <h5>Pasajero {index + 1} ({item.type === 'adult' ? 'Adulto' : item.type === 'child' ? 'Niño' : 'Bebé'})</h5>
-                                    <Row>
-                                        <Col md={6}>
-                                            <Form.Group controlId={`formFirstName${index}`} className="mb-3">
-                                                <Form.Label>Nombre</Form.Label>
-                                                <Form.Control
-                                                    type="text"
-                                                    placeholder="Ingresa tu nombre"
-                                                    {...register(`passengers.${index}.firstName`, {
-                                                        required: 'El nombre es obligatorio',
-                                                        minLength: {
-                                                            value: 2,
-                                                            message: 'El nombre debe tener al menos 2 caracteres'
-                                                        }
-                                                    })}
-                                                    isInvalid={!!errors?.passengers?.[index]?.firstName}
-                                                />
-                                                <Form.Control.Feedback type="invalid">
-                                                    {errors?.passengers?.[index]?.firstName?.message}
-                                                </Form.Control.Feedback>
-                                            </Form.Group>
-                                        </Col>
-                                        <Col md={6}>
-                                            <Form.Group controlId={`formLastName${index}`} className="mb-3">
-                                                <Form.Label>Apellido</Form.Label>
-                                                <Form.Control
-                                                    type="text"
-                                                    placeholder="Ingresa tu apellido"
-                                                    {...register(`passengers.${index}.lastName`, {
-                                                        required: 'El apellido es obligatorio',
-                                                        minLength: {
-                                                            value: 2,
-                                                            message: 'El apellido debe tener al menos 2 caracteres'
-                                                        }
-                                                    })}
-                                                    isInvalid={!!errors?.passengers?.[index]?.lastName}
-                                                />
-                                                <Form.Control.Feedback type="invalid">
-                                                    {errors?.passengers?.[index]?.lastName?.message}
-                                                </Form.Control.Feedback>
-                                            </Form.Group>
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col md={6}>
-                                            <Form.Group controlId={`formGender${index}`} className="mb-3">
-                                                <Form.Label>Género</Form.Label>
-                                                <Form.Select
-                                                    {...register(`passengers.${index}.gender`, {
-                                                        required: 'Selecciona un género'
-                                                    })}
-                                                    isInvalid={!!errors?.passengers?.[index]?.gender}
-                                                >
-                                                    <option value="">Selecciona tu género</option>
-                                                    <option value="male">Masculino</option>
-                                                    <option value="female">Femenino</option>
-                                                    <option value="other">Otro</option>
-                                                </Form.Select>
-                                                <Form.Control.Feedback type="invalid">
-                                                    {errors?.passengers?.[index]?.gender?.message}
-                                                </Form.Control.Feedback>
-                                            </Form.Group>
-                                        </Col>
-                                        <Col md={6}>
-                                            <Form.Group controlId={`formEmail${index}`} className="mb-3">
-                                                <Form.Label>Correo</Form.Label>
-                                                <Form.Control
-                                                    type="email"
-                                                    placeholder="Ingresa tu correo"
-                                                    {...register(`passengers.${index}.email`, {
-                                                        required: 'El correo es obligatorio',
-                                                        pattern: {
-                                                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                                            message: 'Correo electrónico inválido'
-                                                        }
-                                                    })}
-                                                    isInvalid={!!errors?.passengers?.[index]?.email}
-                                                />
-                                                <Form.Control.Feedback type="invalid">
-                                                    {errors?.passengers?.[index]?.email?.message}
-                                                </Form.Control.Feedback>
-                                            </Form.Group>
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col md={6}>
-                                            <Form.Group controlId={`formBirthDate${index}`} className="mb-3">
-                                                <Form.Label>Fecha de Nacimiento</Form.Label>
-                                                <Form.Control
-                                                    type="date"
-                                                    placeholder="Ingresa tu fecha de nacimiento"
-                                                    {...register(`passengers.${index}.birthDate`, {
-                                                        required: 'La fecha de nacimiento es obligatoria',
-                                                        validate: value =>
-                                                            (new Date(value) <= new Date()) || 'La fecha no puede ser en el futuro'
-                                                    })}
-                                                    max={
-                                                        item.type === 'adult'
-                                                            ? new Date(new Date().getFullYear() - 18, new Date().getMonth(), new Date().getDate()).toISOString().split('T')[0]
-                                                            : item.type === 'child'
-                                                                ? new Date(new Date().getFullYear() - 12, new Date().getMonth(), new Date().getDate()).toISOString().split('T')[0]
-                                                                : new Date(new Date().getFullYear() - 2, new Date().getMonth(), new Date().getDate()).toISOString().split('T')[0]
-                                                    }
-                                                    isInvalid={!!errors?.passengers?.[index]?.birthDate}
-                                                />
-                                                <Form.Control.Feedback type="invalid">
-                                                    {errors?.passengers?.[index]?.birthDate?.message}
-                                                </Form.Control.Feedback>
-                                            </Form.Group>
-                                        </Col>
-                                        <Col md={6}>
-                                            <Form.Group controlId={`formPhone${index}`} className="mb-3">
-                                                <Form.Label>Celular</Form.Label>
-                                                <Form.Control
-                                                    type="text"
-                                                    placeholder="Ingresa tu número de celular"
-                                                    {...register(`passengers.${index}.phone`, {
-                                                        required: 'El número de celular es obligatorio',
-                                                        pattern: {
-                                                            value: /^[0-9]{10}$/,
-                                                            message: 'Número de celular inválido (10 dígitos)'
-                                                        }
-                                                    })}
-                                                    isInvalid={!!errors?.passengers?.[index]?.phone}
-                                                />
-                                                <Form.Control.Feedback type="invalid">
-                                                    {errors?.passengers?.[index]?.phone?.message}
-                                                </Form.Control.Feedback>
-                                            </Form.Group>
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col md={6}>
-                                            <Form.Group controlId={`formDocumentType${index}`} className="mb-3">
-                                                <Form.Label>Tipo de Documento</Form.Label>
-                                                <Form.Select
-                                                    {...register(`passengers.${index}.documentType`, {
-                                                        required: 'Selecciona un tipo de documento'
-                                                    })}
-                                                    isInvalid={!!errors?.passengers?.[index]?.documentType}
-                                                >
-                                                    <option value="">Selecciona el tipo de documento</option>
-                                                    <option value="dni">Cédula</option>
-                                                    <option value="passport">Pasaporte</option>
-                                                    <option value="idCard">Número de Identidad</option>
-                                                </Form.Select>
-                                                <Form.Control.Feedback type="invalid">
-                                                    {errors?.passengers?.[index]?.documentType?.message}
-                                                </Form.Control.Feedback>
-                                            </Form.Group>
-                                        </Col>
-                                        <Col md={6}>
-                                            <Form.Group controlId={`formDocumentNumber${index}`} className="mb-3">
-                                                <Form.Label>Número de Documento</Form.Label>
-                                                <Form.Control
-                                                    type="text"
-                                                    placeholder="Ingresa tu número de documento"
-                                                    {...register(`passengers.${index}.documentNumber`, {
-                                                        required: 'El número de documento es obligatorio'
-                                                    })}
-                                                    isInvalid={!!errors?.passengers?.[index]?.documentNumber}
-                                                />
-                                                <Form.Control.Feedback type="invalid">
-                                                    {errors?.passengers?.[index]?.documentNumber?.message}
-                                                </Form.Control.Feedback>
-                                            </Form.Group>
-                                        </Col>
-                                    </Row>
-                                </div>
-                            ))}
-
-                            <Button type="submit" variant="primary">Reservar</Button>
+                            <Accordion defaultActiveKey="0">
+                                {/* Generar secciones dinámicas según el número de pasajeros */}
+                                {fields.map((item, index) => {
+                                    const hasErrors = Object.keys(errors?.passengers?.[index] || {}).length > 0;
+                                    return (
+                                        <Accordion.Item eventKey={index.toString()} key={item.id} className={hasErrors ? 'border-danger' : 'border-success'}>
+                                            <Accordion.Header className={hasErrors ? 'text-danger' : 'text-success'}>
+                                                Pasajero {index + 1} ({item.type === 'adult' ? 'Adulto' : item.type === 'child' ? 'Niño' : 'Bebé'})
+                                            </Accordion.Header>
+                                            <Accordion.Body>
+                                                <div className="p-3 rounded">
+                                                    <Row>
+                                                        <Col md={6}>
+                                                            <Form.Group controlId={`formFirstName${index}`} className="mb-3">
+                                                                <Form.Label>Nombre</Form.Label>
+                                                                <Form.Control
+                                                                    type="text"
+                                                                    placeholder="Ingresa tu nombre"
+                                                                    {...register(`passengers.${index}.firstName`, {
+                                                                        required: 'El nombre es obligatorio',
+                                                                        minLength: {
+                                                                            value: 2,
+                                                                            message: 'El nombre debe tener al menos 2 caracteres'
+                                                                        }
+                                                                    })}
+                                                                    isInvalid={!!errors?.passengers?.[index]?.firstName}
+                                                                />
+                                                                <Form.Control.Feedback type="invalid">
+                                                                    {errors?.passengers?.[index]?.firstName?.message}
+                                                                </Form.Control.Feedback>
+                                                            </Form.Group>
+                                                        </Col>
+                                                        <Col md={6}>
+                                                            <Form.Group controlId={`formLastName${index}`} className="mb-3">
+                                                                <Form.Label>Apellido</Form.Label>
+                                                                <Form.Control
+                                                                    type="text"
+                                                                    placeholder="Ingresa tu apellido"
+                                                                    {...register(`passengers.${index}.lastName`, {
+                                                                        required: 'El apellido es obligatorio',
+                                                                        minLength: {
+                                                                            value: 2,
+                                                                            message: 'El apellido debe tener al menos 2 caracteres'
+                                                                        }
+                                                                    })}
+                                                                    isInvalid={!!errors?.passengers?.[index]?.lastName}
+                                                                />
+                                                                <Form.Control.Feedback type="invalid">
+                                                                    {errors?.passengers?.[index]?.lastName?.message}
+                                                                </Form.Control.Feedback>
+                                                            </Form.Group>
+                                                        </Col>
+                                                    </Row>
+                                                    <Row>
+                                                        <Col md={6}>
+                                                            <Form.Group controlId={`formGender${index}`} className="mb-3">
+                                                                <Form.Label>Género</Form.Label>
+                                                                <Form.Select
+                                                                    {...register(`passengers.${index}.gender`, {
+                                                                        required: 'Selecciona un género'
+                                                                    })}
+                                                                    isInvalid={!!errors?.passengers?.[index]?.gender}
+                                                                >
+                                                                    <option value="">Selecciona tu género</option>
+                                                                    <option value="male">Masculino</option>
+                                                                    <option value="female">Femenino</option>
+                                                                    <option value="other">Otro</option>
+                                                                </Form.Select>
+                                                                <Form.Control.Feedback type="invalid">
+                                                                    {errors?.passengers?.[index]?.gender?.message}
+                                                                </Form.Control.Feedback>
+                                                            </Form.Group>
+                                                        </Col>
+                                                        <Col md={6}>
+                                                            <Form.Group controlId={`formEmail${index}`} className="mb-3">
+                                                                <Form.Label>Correo</Form.Label>
+                                                                <Form.Control
+                                                                    type="email"
+                                                                    placeholder="Ingresa tu correo"
+                                                                    {...register(`passengers.${index}.email`, {
+                                                                        required: 'El correo es obligatorio',
+                                                                        pattern: {
+                                                                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                                                            message: 'Correo electrónico inválido'
+                                                                        }
+                                                                    })}
+                                                                    isInvalid={!!errors?.passengers?.[index]?.email}
+                                                                />
+                                                                <Form.Control.Feedback type="invalid">
+                                                                    {errors?.passengers?.[index]?.email?.message}
+                                                                </Form.Control.Feedback>
+                                                            </Form.Group>
+                                                        </Col>
+                                                    </Row>
+                                                    <Row>
+                                                        <Col md={6}>
+                                                            <Form.Group controlId={`formBirthDate${index}`} className="mb-3">
+                                                                <Form.Label>Fecha de Nacimiento</Form.Label>
+                                                                <Form.Control
+                                                                    type="date"
+                                                                    placeholder="Ingresa tu fecha de nacimiento"
+                                                                    {...register(`passengers.${index}.birthDate`, {
+                                                                        required: 'La fecha de nacimiento es obligatoria',
+                                                                        validate: value =>
+                                                                            (new Date(value) <= new Date()) || 'La fecha no puede ser en el futuro'
+                                                                    })}
+                                                                    max={
+                                                                        item.type === 'adult'
+                                                                            ? new Date(new Date().getFullYear() - 18, new Date().getMonth(), new Date().getDate()).toISOString().split('T')[0]
+                                                                            : item.type === 'child'
+                                                                                ? new Date(new Date().getFullYear() - 12, new Date().getMonth(), new Date().getDate()).toISOString().split('T')[0]
+                                                                                : new Date(new Date().getFullYear() - 2, new Date().getMonth(), new Date().getDate()).toISOString().split('T')[0]
+                                                                    }
+                                                                    isInvalid={!!errors?.passengers?.[index]?.birthDate}
+                                                                />
+                                                                <Form.Control.Feedback type="invalid">
+                                                                    {errors?.passengers?.[index]?.birthDate?.message}
+                                                                </Form.Control.Feedback>
+                                                            </Form.Group>
+                                                        </Col>
+                                                        <Col md={6}>
+                                                            <Form.Group controlId={`formPhone${index}`} className="mb-3">
+                                                                <Form.Label>Celular</Form.Label>
+                                                                <Form.Control
+                                                                    type="text"
+                                                                    placeholder="Ingresa tu número de celular"
+                                                                    {...register(`passengers.${index}.phone`, {
+                                                                        required: 'El número de celular es obligatorio',
+                                                                        pattern: {
+                                                                            value: /^[0-9]{10}$/,
+                                                                            message: 'Número de celular inválido (10 dígitos)'
+                                                                        }
+                                                                    })}
+                                                                    isInvalid={!!errors?.passengers?.[index]?.phone}
+                                                                />
+                                                                <Form.Control.Feedback type="invalid">
+                                                                    {errors?.passengers?.[index]?.phone?.message}
+                                                                </Form.Control.Feedback>
+                                                            </Form.Group>
+                                                        </Col>
+                                                    </Row>
+                                                    <Row>
+                                                        <Col md={6}>
+                                                            <Form.Group controlId={`formDocumentType${index}`} className="mb-3">
+                                                                <Form.Label>Tipo de Documento</Form.Label>
+                                                                <Form.Select
+                                                                    {...register(`passengers.${index}.documentType`, {
+                                                                        required: 'Selecciona un tipo de documento'
+                                                                    })}
+                                                                    isInvalid={!!errors?.passengers?.[index]?.documentType}
+                                                                >
+                                                                    <option value="">Selecciona el tipo de documento</option>
+                                                                    <option value="dni">Cédula</option>
+                                                                    <option value="passport">Pasaporte</option>
+                                                                    <option value="idCard">Número de Identidad</option>
+                                                                </Form.Select>
+                                                                <Form.Control.Feedback type="invalid">
+                                                                    {errors?.passengers?.[index]?.documentType?.message}
+                                                                </Form.Control.Feedback>
+                                                            </Form.Group>
+                                                        </Col>
+                                                        <Col md={6}>
+                                                            <Form.Group controlId={`formDocumentNumber${index}`} className="mb-3">
+                                                                <Form.Label>Número de Documento</Form.Label>
+                                                                <Form.Control
+                                                                    type="text"
+                                                                    placeholder="Ingresa tu número de documento"
+                                                                    {...register(`passengers.${index}.documentNumber`, {
+                                                                        required: 'El número de documento es obligatorio'
+                                                                    })}
+                                                                    isInvalid={!!errors?.passengers?.[index]?.documentNumber}
+                                                                />
+                                                                <Form.Control.Feedback type="invalid">
+                                                                    {errors?.passengers?.[index]?.documentNumber?.message}
+                                                                </Form.Control.Feedback>
+                                                            </Form.Group>
+                                                        </Col>
+                                                    </Row>
+                                                </div>
+                                            </Accordion.Body>
+                                        </Accordion.Item>
+                                    );
+                                })}
+                            </Accordion>
+                            <Button type="submit" variant="primary" className="mt-4">Reservar</Button>
                         </Form>
                     </Col>
 

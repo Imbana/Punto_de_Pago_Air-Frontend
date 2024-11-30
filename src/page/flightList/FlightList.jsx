@@ -38,7 +38,7 @@ const FlightList = () => {
 
   const navigate = useNavigate();
 
-  const handleSelectClass = (flight) => {
+  const handleSelectClass = (flight, classSeat) => {
     const flightAndFilters = {
       flight: flight,
       filters: {
@@ -47,7 +47,8 @@ const FlightList = () => {
         date: date,
         adults: adults,
         children: children,
-        babies: babies
+        babies: babies,
+        seat_class: classSeat,
       }
     }
     info_flight(flightAndFilters)
@@ -200,8 +201,12 @@ const FlightList = () => {
                             <span onClick={() => handleShowModal(flight.vuelos)} className='link-span'>Directo</span>
                         }
                         <div className="position-absolute text-dark end-0">
-                          <span>Cop </span>
-                          <span className='h2  font-weight-bold ' style={{ fontWeight: 700 }}>{flight.precio} </span>
+
+                          <span className='h2  font-weight-bold ' style={{ fontWeight: 700 }}>
+                            {Number(flight.precio).toLocaleString('es-CO', {
+                              style: 'currency',
+                              currency: 'COP',
+                            })} </span> COP
                         </div>
                       </div>
 
@@ -229,7 +234,14 @@ const FlightList = () => {
                                 <Card className='shadow-sm'>
                                   <Card.Body className='card-body'>
                                     <Card.Title className='text-center'>Económico</Card.Title>
-                                    <Card.Subtitle className='text-center mb-3'>$300.000</Card.Subtitle>
+                                    <Card.Subtitle className='text-center mb-3'>
+                                      {
+                                        (flight.precio + (flight.precio * (classflight.economy_class_available.percentage / 100))).toLocaleString('es-CO', {
+                                          style: 'currency',
+                                          currency: 'COP',
+                                        })
+                                      }
+                                    </Card.Subtitle>
                                     <ul className="list-unstyled">
                                       <li>
                                         <BsBackpack3 className='red-icon' /> 1 artículo personal (bolso)
@@ -249,7 +261,7 @@ const FlightList = () => {
                                     </ul>
 
                                   </Card.Body>
-                                  <Button disabled={classflight.economy_class_available.cant_seat > 0 ? false : true} variant='primary' block='true' className='btn' onClick={() => handleSelectClass(flight.vuelos)}>
+                                  <Button disabled={classflight.economy_class_available.cant_seat > 0 ? false : true} variant='primary' block='true' className='btn' onClick={() => handleSelectClass(flight.vuelos, 'economy_class')}>
                                     {classflight.economy_class_available.cant_seat > 0 ? 'Seleccionar' : 'Asientos No Disponibles'}
                                   </Button>
                                   <Card.Text className='gray-label'>Precio por pasajero</Card.Text>
@@ -261,7 +273,14 @@ const FlightList = () => {
                                 <Card className='shadow-sm'>
                                   <Card.Body className='card-body'>
                                     <Card.Title className='text-center'>Ejecutiva</Card.Title>
-                                    <Card.Subtitle className='text-center mb-3'>$330.000</Card.Subtitle>
+                                    <Card.Subtitle className='text-center mb-3'>
+                                      {
+                                        (flight.precio + (flight.precio * (classflight.business_class_available.percentage / 100))).toLocaleString('es-CO', {
+                                          style: 'currency',
+                                          currency: 'COP',
+                                        })
+                                      }
+                                    </Card.Subtitle>
                                     <ul className="list-unstyled">
                                       <li>
                                         <BsBackpack3 className='orange-icon' /> 1 artículo personal (bolso)
@@ -281,7 +300,7 @@ const FlightList = () => {
                                     </ul>
 
                                   </Card.Body>
-                                  <Button disabled={classflight.business_class_available.cant_seat > 0 ? false : true} variant='primary' block='true' className='btn' onClick={() => handleSelectClass(flight.vuelos)}>
+                                  <Button disabled={classflight.business_class_available.cant_seat > 0 ? false : true} variant='primary' block='true' className='btn' onClick={() => handleSelectClass(flight.vuelos, 'business_class')}>
                                     {classflight.business_class_available.cant_seat > 0 ? 'Seleccionar' : 'Asientos No Disponibles'}
                                   </Button>
                                   <Card.Text className='gray-label'>Precio por pasajero</Card.Text>
@@ -293,7 +312,14 @@ const FlightList = () => {
                                 <Card className='shadow-sm'>
                                   <Card.Body className='card-body'>
                                     <Card.Title className='text-center'>Primera Clase</Card.Title>
-                                    <Card.Subtitle className='text-center mb-3'>$360.000</Card.Subtitle>
+                                    <Card.Subtitle className='text-center mb-3'>
+                                      {
+                                        (flight.precio + (flight.precio * (classflight.first_class_available.percentage / 100))).toLocaleString('es-CO', {
+                                          style: 'currency',
+                                          currency: 'COP',
+                                        })
+                                      }
+                                    </Card.Subtitle>
                                     <ul className="list-unstyled">
                                       <li>
                                         <BsBackpack3 className='purple-icon' /> 1 artículo personal (bolso)
@@ -313,7 +339,7 @@ const FlightList = () => {
                                     </ul>
 
                                   </Card.Body>
-                                  <Button disabled={classflight.first_class_available.cant_seat > 0 ? false : true} variant='primary' block='true' className='btn' onClick={() => handleSelectClass(flight.vuelos)}>
+                                  <Button disabled={classflight.first_class_available.cant_seat > 0 ? false : true} variant='primary' block='true' className='btn' onClick={() => handleSelectClass(flight.vuelos, 'first_class')}>
                                     {classflight.first_class_available.cant_seat > 0 ? 'Seleccionar' : 'Asientos No Disponibles'}
                                   </Button>
                                   <Card.Text className='gray-label'>Precio por pasajero</Card.Text>

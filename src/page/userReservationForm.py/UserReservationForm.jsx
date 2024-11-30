@@ -57,6 +57,7 @@ const UserReservationForm = () => {
                 return;
             }
 
+            data.class_seat = information.filters.class_seat
             const dataEndpoint = dataReservation(information.flight, data);
             console.log("Datos enviados al servidor:", dataEndpoint);
 

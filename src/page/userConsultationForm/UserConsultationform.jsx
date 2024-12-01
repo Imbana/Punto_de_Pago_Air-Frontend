@@ -1,17 +1,15 @@
 import { useState, useEffect } from "react";
-import imgFlight from '../../assets/avion.png'
+import imgFlight from '../../assets/consultar.jpg'
 import { Form, Button, Container, Row, Col, Card, Accordion } from "react-bootstrap";
 import { useSearchParams } from "react-router";
 import axios from "axios";
 import Header from "../../components/Header";
 
 const UserConsultationForm = () => {
-
   const [reservation, setReservation] = useState(null);
   const [error, setError] = useState("");
 
   const statusPaymentClass = reservation && reservation.payment_status === 'PENDIENTE' ? 'badge bg-warning-subtle border-warning-subtle text-warning-emphasis rounded-pill' : ' bg-success-subtle border-success-subtle text-success-emphasis rounded-pill';
-
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -20,11 +18,10 @@ const UserConsultationForm = () => {
 
   const [searchId, setSearchId] = useState(id);
   const [searchEmail, setSearchEmail] = useState(email);
-  useEffect(() => {
 
+  useEffect(() => {
     const fetchReservation = async () => {
       try {
-
         const response = await axios.get(`https://cantozil.pythonanywhere.com/api/bookings-scales/${id}`, {
           params: { email }
         });
@@ -35,32 +32,24 @@ const UserConsultationForm = () => {
           setError("")
         } else {
           setReservation(null)
-          setError("La reserva  no fue encontrada.")
+          setError("La reserva no fue encontrada.")
         }
-
-
       } catch (err) {
         setReservation(null)
         console.error('Error fetching flights:', err);
-        setError("La reserva  no fue encontrada.");
-
+        setError("La reserva no fue encontrada.");
       }
     };
 
-
-
     fetchReservation();
   }, [id, email]);
-
 
   const handleChangeEmail = (date) => {
     setSearchEmail(date.target.value)
   };
   const handleChangeID = (date) => {
     setSearchId(date.target.value)
-
   };
-
 
   const handleSearch = () => {
     console.log('click')
@@ -74,11 +63,21 @@ const UserConsultationForm = () => {
     <>
       <Header />
       <Container className="mt-5">
-        <Row className="align-items-center">
+        <Row className="align-items-center flex-column-reverse flex-md-row">
+          {/* Columna para la imagen */}
+          <Col xs={12} md={6} className="d-flex justify-content-center mt-4 mt-md-0">
+            <img
+              src={imgFlight}
+              alt="Reserva logo"
+              className="img-fluid rounded"
+              style={{ maxWidth: "80%", height: "auto" }}
+            />
+          </Col>
+
           {/* Columna para el formulario */}
-          <Col md={6}>
+          <Col xs={12} md={6} className="d-flex flex-column align-items-start justify-content-start p-4">
             <h2 className="mb-4">Consulta tu Reserva</h2>
-            <Form>
+            <Form className="w-100" onSubmit={(e) => { e.preventDefault(); handleSearch(); }}>
               <Form.Group controlId="formDocumentNumber" className="mb-3">
                 <Form.Label>Número de Reserva</Form.Label>
                 <Form.Control
@@ -88,7 +87,11 @@ const UserConsultationForm = () => {
                   value={searchId}
                   onChange={handleChangeID}
                   required
+                  isInvalid={!searchId}
                 />
+                <Form.Control.Feedback type="invalid">
+                  El número de reserva es obligatorio.
+                </Form.Control.Feedback>
               </Form.Group>
               <Form.Group controlId="formEmail" className="mb-3">
                 <Form.Label>Correo Electrónico</Form.Label>
@@ -99,24 +102,18 @@ const UserConsultationForm = () => {
                   value={searchEmail}
                   onChange={handleChangeEmail}
                   required
+                  isInvalid={!searchEmail}
                 />
+                <Form.Control.Feedback type="invalid">
+                  El correo electrónico es obligatorio.
+                </Form.Control.Feedback>
               </Form.Group>
               <div className="text-center">
-                <Button variant="primary" onClick={handleSearch}>
+                <Button type="submit" variant="primary">
                   Buscar Reserva
                 </Button>
               </div>
             </Form>
-          </Col>
-
-          {/* Columna para la imagen */}
-          <Col md={6} className="d-flex justify-content-center">
-            <img
-              src={imgFlight}
-              alt="Reserva logo"
-              className="img-fluid rounded"
-              style={{ maxWidth: "80%", height: "auto" }} // Ajustar tamaño de la imagen
-            />
           </Col>
         </Row>
 
@@ -201,7 +198,7 @@ const UserConsultationForm = () => {
                       </Card.Text>
                     </Col>
                   </Row>
-                  {reservation && reservation.payment_status == 'PENDIENTE' && (
+                  {reservation && reservation.payment_status === 'PENDIENTE' && (
                     <Row>
                       <Col md={12}>
                         <Card.Text>
@@ -211,7 +208,6 @@ const UserConsultationForm = () => {
                       </Col>
                     </Row>
                   )}
-
 
                   <hr />
                   <Card.Title className="mb-3">Pasajero(s)</Card.Title>
@@ -242,17 +238,14 @@ const UserConsultationForm = () => {
                                 </Card.Text>
                               </Col>
                               <Col md={6} className="d-flex">
-                                <strong>Vuelos- asiento: </strong> 
-                                {
-                                  person.seats.map(seat => (
-                                    <div key={seat.id} >
-                                      <span>{seat.airplane}</span>
-                                 
-                                      <span>  - </span>
-                                      <span> {seat.seat}, </span>
-                                    </div>
-                                  ))
-                                }
+                                <strong>Vuelos- asiento: </strong>
+                                {person.seats.map(seat => (
+                                  <div key={seat.id}>
+                                    <span>{seat.airplane}</span>
+                                    <span>  - </span>
+                                    <span> {seat.seat}, </span>
+                                  </div>
+                                ))}
                               </Col>
                             </Row>
                             <Row>
@@ -268,21 +261,20 @@ const UserConsultationForm = () => {
                       ))
                     }
                   </Accordion>
-
-
                 </Card.Body>
               </Card>
             )}
             {error && (
-              <Card className="p-4 bg-danger text-white">
+              <Card className="p-4 bg-danger text-white text-center">
                 <Card.Body>
-                  <Card.Text>{error}</Card.Text>
+                  <Card.Text className="fw-bold">{error}</Card.Text>
                 </Card.Body>
               </Card>
             )}
           </Col>
         </Row>
-      </Container ></>
+      </Container>
+    </>
   );
 };
 

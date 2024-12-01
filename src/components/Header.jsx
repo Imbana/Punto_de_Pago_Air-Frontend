@@ -6,15 +6,9 @@ const Header = () => {
 
 
     return (
-        <header className="header mb-4 d-flex justify-content-between align-items-center">
+        <header className="header m-4 d-flex justify-content-between align-items-center px-4">
             <Link to="/">
-                <img
-                    src={logo}
-                    width="150"
-                    height="60"
-                    alt="Logo Portal de Pago Air"
-                    className="logo-left"
-                />
+                <img src={logo} width="100" alt="Logo" className="logo-left" />
             </Link>
 
             <Link

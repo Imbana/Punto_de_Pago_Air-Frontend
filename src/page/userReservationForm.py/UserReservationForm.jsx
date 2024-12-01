@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useForm, useFieldArray } from 'react-hook-form';
 import { useStoreFlight } from '../../store/store';
 import axios from "axios";
-
+import { Link } from "react-router-dom";
 import { dataReservation } from "../../helpers/utils";
 
 const UserReservationForm = () => {
@@ -62,35 +62,44 @@ const UserReservationForm = () => {
             const dataEndpoint = dataReservation(information.flight, data);
             console.log("Datos enviados al servidor:", dataEndpoint);
 
-            const response = await axios.post('https://cantozil.pythonanywhere.com/api/bookings/', dataEndpoint);
+            const response = await axios.post('https://cantozil.pythonanywhere.com/api/bookings_scales/', dataEndpoint);
 
             if (response.data) {
                 reset();
-                const params = new URLSearchParams({ id: response.data.id, email: response.data.passengers[0].email });
+                const params = new URLSearchParams({ id: response.data.id, email: response.data.passenger_email });
                 navigate(`/userConsultation?${params.toString()}`);
             } else {
                 alert('Error al realizar la reserva. Intenta de nuevo.');
             }
         } catch (error) {
-            console.error("Error al procesar la solicitud:", error.message);
-            alert(`Ocurrió un error: ${error.message}`);
+
+ 
+            if (error.response && error.response.status === 404) {
+                console.log("Hola mundoooooooo",  error.response.data)
+                const {error: errorMessage}  = error.response.data;
+                alert(`Error:  ${errorMessage} .`);
+            }
+            // console.error("Error al procesar la solicitud:", error.message);
+            // alert(`Ocurrió un error: ${error.message}`);
         }
     };
 
     const goToReservationLookup = () => {
-        navigate("/userConsultation");
+        navigate("/userConsultation", { replace: false });
     };
 
     return (
         <>
             <header className="header mb-4 d-flex justify-content-between align-items-center">
-                <img
-                    src={logo}
-                    width="150"
-                    height="60"
-                    alt="Logo Portal de Pago Air"
-                    className="logo-left"
-                />
+                <Link to="/">
+                    <img
+                        src={logo}
+                        width="150"
+                        height="60"
+                        alt="Logo Portal de Pago Air"
+                        className="logo-left"
+                    />
+                </Link>
                 <Button
                     variant="outline-primary"
                     onClick={goToReservationLookup}

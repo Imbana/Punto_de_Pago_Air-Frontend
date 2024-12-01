@@ -23,10 +23,21 @@ export const getWeekDays = (baseDate) => {
 
 export const dataReservation = (infoFlight, inforUser) => {
     // Asegúrate de acceder a infoFlight.flight si es necesario
-    const flightData = Array.isArray(infoFlight.flight) ? infoFlight.flight[0] : infoFlight[0];
+    const flightData = Array.isArray(infoFlight.flight);
+    const departure_date = infoFlight.filters.date
 
-    if (!flightData?.id) {
-        throw new Error("El vuelo no está definido o es inválido.");
+    console.log("flightData")
+    console.log(infoFlight.flight)
+    console.log("flightData")
+    console.log(flightData)
+
+    let flight_ids = {};
+
+    for (const flight of infoFlight.flight) {
+        flight_ids = {
+            ...flight_ids,
+            [flight.id]: ""
+        };
     }
 
     const passengers = inforUser.passengers.map((passenger) => ({
@@ -35,6 +46,8 @@ export const dataReservation = (infoFlight, inforUser) => {
         email: passenger.email,
         date_of_birth: passenger.birthDate,
         is_infant: passenger.birthDate && new Date().getFullYear() - new Date(passenger.birthDate).getFullYear() < 2,
+        seat_class: inforUser.seat_class,
+        flight_ids
     }));
 
     return {
@@ -45,6 +58,7 @@ export const dataReservation = (infoFlight, inforUser) => {
         luggage_hold: true,
         extra_luggage: 0,
         extra_meal: 0,
+        departure_date
     };
 };
 

@@ -9,7 +9,7 @@ import { useStoreFlight } from '../../store/store'
 import { useNavigate } from "react-router-dom";
 import logo from '../../assets/logo.png';
 import axios from 'axios';
-
+import { Link } from "react-router-dom";
 
 import { getWeekDays } from "../../helpers/utils"
 import { BsBackpack3 } from 'react-icons/bs';
@@ -65,7 +65,7 @@ const FlightList = () => {
     setModalContent([]);
   };
 
-  const fetchClassFlight = async (flight) => {
+  const fetchClassFlight = async () => {
     try {
       const response = await axios.get(`https://cantozil.pythonanywhere.com/api/flight/1/availability/2024-11-10`);
       console.log(response)
@@ -121,7 +121,10 @@ const FlightList = () => {
     setSearchParams({
       origin,
       destination,
-      date, // Actualiza la URL con la nueva fecha
+      date,
+      children,
+      babies,
+      adults
     });
   };
 
@@ -138,13 +141,15 @@ const FlightList = () => {
         </div>
       )}
       <header className="header mb-4">
-        <img
-          src={logo}
-          width="150"
-          height="60"
-          alt="Logo Portal de Pago Air"
-          className="logo-left"
-        />
+        <Link to="/">
+          <img
+            src={logo}
+            width="150"
+            height="60"
+            alt="Logo Portal de Pago Air"
+            className="logo-left"
+          />
+        </Link>
       </header>
       <div className="results-container">
         <Container className="mt-5 mb-5">

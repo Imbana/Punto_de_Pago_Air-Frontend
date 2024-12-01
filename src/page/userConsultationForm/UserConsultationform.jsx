@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import logo from '../../assets/logo.png';
 import imgFlight from '../../assets/avion.png'
 import { Form, Button, Container, Row, Col, Card, Accordion } from "react-bootstrap";
 import { useSearchParams } from "react-router";
 import axios from "axios";
+import Header from "../../components/Header";
 
 const UserConsultationForm = () => {
 
@@ -25,13 +25,13 @@ const UserConsultationForm = () => {
     const fetchReservation = async () => {
       try {
 
-        const response = await axios.get(`https://cantozil.pythonanywhere.com/api/bookings/${id}`, {
+        const response = await axios.get(`https://cantozil.pythonanywhere.com/api/bookings-scales/${id}`, {
           params: { email }
         });
 
         console.log(response.data)
         if (response.data) {
-          setReservation(response.data[0])
+          setReservation(response.data)
           setError("")
         } else {
           setReservation(null)
@@ -71,14 +71,8 @@ const UserConsultationForm = () => {
   }
 
   return (
-    <><header className="header mb-4">
-      <img
-        src={logo}
-        width="150"
-        height="60"
-        alt="Logo Portal de Pago Air"
-        className="logo-left" />
-    </header>
+    <>
+      <Header />
       <Container className="mt-5">
         <Row className="align-items-center">
           {/* Columna para el formulario */}
@@ -149,38 +143,44 @@ const UserConsultationForm = () => {
                   <Row>
                     <Col md={6}>
                       <Card.Text>
-                        <strong>Vuelo origen:</strong> {reservation.flight.origin.name}
-                      </Card.Text>
-                    </Col>
-                    <Col md={6}>
-                      <Card.Text>
-                        <strong>Vuelo destino:</strong> {reservation.flight.destination.name}
-                      </Card.Text>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col md={6}>
-                      <Card.Text>
-                        <strong>Hora salida</strong> {reservation.flight.departure_time}
-                      </Card.Text>
-                    </Col>
-                    <Col md={6}>
-                      <Card.Text>
-                        <strong>Hora llegada:</strong> {reservation.flight.arrival_time}
-                      </Card.Text>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col md={6}>
-                      <Card.Text>
                         <strong>Fecha de Reserva</strong> {new Date(reservation.booking_date).toLocaleDateString('es-CO')}
                       </Card.Text>
                     </Col>
                     <Col></Col>
                   </Row>
-
-
                   <hr />
+                  {
+                    reservation.flights.map((flight) => (
+                      <div key={flight.id}>
+                        <Row>
+                          <Col md={6}>
+                            <Card.Text>
+                              <strong>Vuelo origen:</strong> {flight.origin.name}
+                            </Card.Text>
+                          </Col>
+                          <Col md={6}>
+                            <Card.Text>
+                              <strong>Vuelo destino:</strong> {flight.destination.name}
+                            </Card.Text>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col md={6}>
+                            <Card.Text>
+                              <strong>Hora salida</strong> {flight.departure_time}
+                            </Card.Text>
+                          </Col>
+                          <Col md={6}>
+                            <Card.Text>
+                              <strong>Hora llegada:</strong> {flight.arrival_time}
+                            </Card.Text>
+                          </Col>
+                        </Row>
+                        <hr />
+                      </div>
+                    ))
+                  }
+
                   <Card.Title className="mb-3">Detalles del Pago</Card.Title>
                   <Row>
                     <Col md={6}>
@@ -241,8 +241,18 @@ const UserConsultationForm = () => {
                                   <strong>Correo Eléctronico:</strong> {person.email}
                                 </Card.Text>
                               </Col>
-                              <Col md={6}>
-                                <strong>Asiento:</strong> B1
+                              <Col md={6} className="d-flex">
+                                <strong>Vuelos- asiento: </strong> 
+                                {
+                                  person.seats.map(seat => (
+                                    <div key={seat.id} >
+                                      <span>{seat.airplane}</span>
+                                 
+                                      <span>  - </span>
+                                      <span> {seat.seat}, </span>
+                                    </div>
+                                  ))
+                                }
                               </Col>
                             </Row>
                             <Row>

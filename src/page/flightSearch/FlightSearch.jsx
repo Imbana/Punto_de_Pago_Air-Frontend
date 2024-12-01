@@ -9,22 +9,26 @@ import { useStoreFlight } from '../../store/store'
 import CardSearch from "../../components/CardSearch"
 import caliImg from "../../assets/cali.jpg"
 import medellinImg from "../../assets/medellin.jpg"
+import { useNavigate } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
 const cards = [{
-        "city": "Cali",
-        "description": "Sumérgete en la cultura y la energía de Cali con precios especiales para tu viaje.",
-        "discount" : "7",
-        "pathImg": caliImg
-    },
-    {
-        "city": "Medellin",
-        "description": "Explora la ciudad de la eterna primavera con increíbles ofertas y paquetes especiales.",
-        "discount" : "10",
-        "pathImg": medellinImg
-    },
+    "city": "Cali",
+    "description": "Sumérgete en la cultura y la energía de Cali con precios especiales para tu viaje.",
+    "discount": "7",
+    "pathImg": caliImg
+},
+{
+    "city": "Medellin",
+    "description": "Explora la ciudad de la eterna primavera con increíbles ofertas y paquetes especiales.",
+    "discount": "10",
+    "pathImg": medellinImg
+},
 ]
 
 const FlightSearch = () => {
+
+    const navigate = useNavigate();
     const [airports, setAirports] = useState([]);
     const [origin, setOrigin] = useState('');
     const [destination, setDestination] = useState('');
@@ -53,7 +57,7 @@ const FlightSearch = () => {
             children: passengers.children,
             babies: passengers.babies
         });
-        window.open(`/flightList?${searchParams.toString()}`);
+        navigate(`/flightList?${searchParams.toString()}`);
     };
 
     useEffect(() => {
@@ -72,13 +76,15 @@ const FlightSearch = () => {
     return (
         <>
             <header className="header mb-4">
-                <img
-                    src={logo}
-                    width="150"
-                    height="60"
-                    alt="Logo Portal de Pago Air"
-                    className="logo-left"
-                />
+                <Link to="/">
+                    <img
+                        src={logo}
+                        width="150"
+                        height="60"
+                        alt="Logo Portal de Pago Air"
+                        className="logo-left"
+                    />
+                </Link>
             </header>
             <div className="hero-section">
                 <Container>

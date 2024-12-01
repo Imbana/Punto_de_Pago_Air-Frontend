@@ -1,5 +1,47 @@
+@import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap');
+
+/* Custom Outline Button Styles */
+
+:root {
+    --primary-outline: #349dd4;
+    --secondary-outline: #0e3b5e;
+}
+
+/* Outline Buttons */
+.btn-primary-outline {
+    background-color: transparent !important;
+    border: 1px solid var(--primary-outline) !important;
+    color: var(--primary-outline) !important;
+}
+
+.btn-primary-outline:hover {
+    background-color: var(--primary-outline) !important;
+    color: #ffffff !important;
+}
+
+.btn-secondary-outline {
+    background-color: transparent !important;
+    border: 1px solid var(--secondary-outline) !important;
+    color: var(--secondary-outline) !important;
+}
+
+.btn-secondary-outline:hover {
+    background-color: var(--secondary-outline) !important;
+    color: #ffffff !important;
+}
+
+/* Responsive Customizations */
+@media (max-width: 768px) {
+
+    .btn-primary-outline,
+    .btn-secondary-outline {
+        width: 100%;
+        margin-top: 1rem;
+    }
+}
+
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: "League Spartan", sans-serif !important;
     margin: 0px;
 }
 
@@ -9,7 +51,11 @@ body {
 .card-flight,
 .results-container h2,
 .no-flights-card {
-    font-family: 'Poppins', sans-serif;
+    font-family: "League Spartan", sans-serif !important;
+}
+
+.bg-cyan {
+    background-color: #349dd4 !important;
 }
 
 /* flightLoader.css */
@@ -116,23 +162,98 @@ body {
 .header {
     padding: 10px auto;
     display: flex;
-    background: #000055;
+    /* background: #000055; */
     justify-content: flex-start;
     align-items: center;
     /* max-width: 1200px; */
     padding-left: 50px;
 }
 
-.hero-section {
+/* .hero-section {
     margin: auto 50px;
-    background-image: url("https://www.pasajesaereos.app/blog/wp-content/uploads/2023/11/avion.jpg");
+    background-image: url("../../assets/hero.jpg");
     background-size: cover;
-    background-position: center;
+    background-position: top;
     padding: 100px 20px;
     color: #ffffff;
     text-align: center;
     border-radius: 30px;
-    /* max-width: 1200px; */
+    height: 70vh;
+} */
+
+/* flightSearch.css */
+.hero-section {
+    display: flex;
+    margin: auto 50px;
+    background-image: url("../../assets/hero.jpg");
+    background-size: cover;
+    align-items: flex-end;
+    justify-content: center;
+    min-height: 70vh;
+    padding: 5rem 0;
+    border-radius: 30px;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    /* box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2); */
+}
+
+.hero-section .title,
+.subtitle {
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.hero-container {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.hero-title {
+    font-size: calc(1.5rem + 3vw);
+    line-height: 1.2;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.hero-subtitle {
+    font-size: calc(1rem + 1.5vw);
+    margin-bottom: 2rem;
+}
+
+.hero-card {
+    width: 100%;
+    max-width: 900px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 1rem;
+    padding: 2rem;
+}
+
+@media (max-width: 768px) {
+    .hero-section {
+        margin: 10px;
+    }
+
+    .hero-title {
+        font-size: 2rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-section {
+        margin: 10px;
+    }
+
+    .hero-title {
+        font-size: 1.5rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1rem;
+    }
 }
 
 .form-container {
@@ -226,14 +347,25 @@ body {
     box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-.btn-search {
-    background-color: #db4201 !important;
+.btn-passenger {
+    background-color: #349dd4 !important;
     color: #fff !important;
     border: none !important;
 }
 
+.btn-passenger:hover {
+    background-color: #0e3b5e !important;
+    color: #fff !important;
+    border: none !important;
+}
+
+.btn-search {
+    background-color: #599d3e !important;
+    color: #fff !important;
+}
+
 .btn-search:hover {
-    background-color: #b83700 !important;
+    background-color: #2d6915 !important;
     color: #fff !important;
 }
 
@@ -328,4 +460,16 @@ body {
 
 .day-selector {
     gap: 10px;
+}
+
+
+.day-picker-popup {
+    z-index: 10;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-top: 5px;
+    width: auto;
+    padding: 1rem;
 }

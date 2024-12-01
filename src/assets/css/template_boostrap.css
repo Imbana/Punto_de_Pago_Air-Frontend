@@ -1,0 +1,135 @@
+/* Template Bootstrap CSS Customization */
+
+:root {
+    --primary-color: #349dd4;
+    --secondary-color: #0e3b5e;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Header Styles */
+.header {
+    background-color: var(--secondary-color);
+    padding: 20px;
+    text-align: center;
+}
+
+.header img {
+    max-width: 100px;
+}
+
+/* Hero Section */
+.hero-section {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    padding: 4rem 0;
+    text-align: center;
+}
+
+.hero-section h1 {
+    font-size: 3rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.hero-section h4 {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--primary-color);
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: darken(var(--primary-color), 10%);
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    border: none;
+}
+
+.btn-secondary:hover {
+    background-color: darken(var(--secondary-color), 10%);
+}
+
+/* Cards */
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.card img {
+    border-bottom: 5px solid var(--primary-color);
+}
+
+.card .btn {
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+}
+
+.card .btn:hover {
+    background-color: darken(var(--primary-color), 15%);
+}
+
+/* Footer */
+.footer {
+    background-color: var(--secondary-color);
+    color: #fff;
+    text-align: center;
+    padding: 1rem;
+}
+
+/* Forms */
+.form-control {
+    border-radius: 10px;
+    border: 1px solid var(--primary-color);
+}
+
+/* Modals */
+.modal-header {
+    background-color: var(--secondary-color);
+    color: #fff;
+}
+
+.modal-footer {
+    border-top: none;
+}
+
+/* Responsive Customizations */
+@media (max-width: 768px) {
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+
+    .hero-section h4 {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-section {
+        padding: 2rem 0;
+    }
+
+    .hero-section h1 {
+        font-size: 1.5rem;
+    }
+
+    .hero-section h4 {
+        font-size: 1rem;
+    }
+
+    .btn {
+        width: 100%;
+        margin-top: 1rem;
+    }
+}

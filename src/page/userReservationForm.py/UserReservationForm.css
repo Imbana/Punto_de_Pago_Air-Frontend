@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap');
+
+
+body{
+    background-color: #f2f6f8 !important;
+    
+}
+
+header{
+    background-color: #f2f6f8 !important;
+}
+
+.col-image{
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.col-form{
+    background-color: #fff !important;
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+h2{
+    color: #00121a;
+}
+
+.btn-booking{
+    background-color: #de4502 !important;
+    color: #fff;
+    font-weight: 600;
+}
+
+.btn-booking:hover{
+    background-color: #b40500 !important;
+    color: #fff;
+    font-weight: 600;
+}

@@ -1,9 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap');
+
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "League Spartan", sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -17,12 +17,40 @@ a {
 
 
 body {
-  margin: 0;
-  min-height: 100vh;
+  background-color: #f2f6f8 !important;
+
+}
+
+header {
+  background-color: #f2f6f8 !important;
+}
+
+.col-image {
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.col-form {
+  background-color: #fff !important;
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  color: #00121a;
+}
+
+.btn-booking {
+  background-color: #de4502 !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+}
+
+.btn-booking:hover {
+  background-color: #b40500 !important;
+  color: #fff !important;
+  font-weight: 600 !important;
 }
 
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
 }
-

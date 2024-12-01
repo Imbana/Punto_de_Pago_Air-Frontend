@@ -39,10 +39,19 @@ const FlightSearch = () => {
 
     const handlePassengersChange = (type, operation) => {
         setPassengers((prev) => {
-            const value = operation === 'increase' ? prev[type] + 1 : prev[type] - 1;
-            if (type === 'adults' && (value < 0 || value > 9)) return prev; // Mínimo 1 adulto
-            if (type === 'children' && (value < 0 || value > 2)) return prev; // Niños 0-2
-            if (type === 'babies' && (value < 0 || value > 2)) return prev; // Bebés 0-2
+            let value = operation === 'increase' ? prev[type] + 1 : prev[type] - 1;
+
+            // Validación de cantidad máxima de pasajeros según tipo
+            if (type === 'adults' && (value < 1 || value > 9)) return prev; // Mínimo 1 adulto, máximo 9
+            if (type === 'children' && (value < 0 || value > prev.adults)) return prev; // Máximo 1 niño por adulto
+            if (type === 'babies' && (value < 0 || value > prev.adults)) return prev; // Máximo 1 bebé por adulto
+
+            // Validación de un adulto por cada niño o bebé
+            const totalChildrenAndBabies = prev.children + prev.babies;
+            if (type === 'adults' && value < totalChildrenAndBabies) {
+                return prev;
+            }
+
             return { ...prev, [type]: value };
         });
     };
@@ -148,8 +157,7 @@ const FlightSearch = () => {
                                 <Button variant="secondary" onClick={() => setShowModal(true)} className="mb-3">
                                     <MdGroup /> {passengers.adults + passengers.children + passengers.babies} pasajeros
                                 </Button>
-                                
-                    
+
                                 <Button
                                     type="submit"
                                     className="mb-3 btn-search"
@@ -167,22 +175,22 @@ const FlightSearch = () => {
                     <Modal.Title>¿Quiénes vuelan?</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {['adults', 'children', 'babies'].map((type, index) => (
+                    {["adults", "children", "babies"].map((type, index) => (
                         <div key={index} className="d-flex justify-content-between align-items-center mb-3">
                             <span>
-                                {type === 'adults' ? 'Adultos' : type === 'children' ? 'Niños' : 'Bebés'}
+                                {type === "adults" ? "Adultos" : type === "children" ? "Niños" : "Bebés"}
                             </span>
                             <div className="d-flex align-items-center gap-2">
                                 <Button
                                     variant="outline-secondary"
-                                    onClick={() => handlePassengersChange(type, 'decrease')}
+                                    onClick={() => handlePassengersChange(type, "decrease")}
                                 >
                                     -
                                 </Button>
                                 <span>{passengers[type]}</span>
                                 <Button
                                     variant="outline-secondary"
-                                    onClick={() => handlePassengersChange(type, 'increase')}
+                                    onClick={() => handlePassengersChange(type, "increase")}
                                 >
                                     +
                                 </Button>

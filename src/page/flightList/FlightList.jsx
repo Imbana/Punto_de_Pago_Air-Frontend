@@ -16,7 +16,6 @@ import { BsBackpack3 } from 'react-icons/bs';
 import { LuBaggageClaim } from 'react-icons/lu';
 import { FaPlaneCircleCheck } from 'react-icons/fa6';
 
-
 const FlightList = () => {
   const [results, setResults] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -34,7 +33,6 @@ const FlightList = () => {
   const adults = searchParams.get('adults');
   const children = searchParams.get('children');
   const babies = searchParams.get('babies');
-
 
   const navigate = useNavigate();
 
@@ -68,11 +66,7 @@ const FlightList = () => {
   const fetchClassFlight = async () => {
     try {
       const response = await axios.get(`https://cantozil.pythonanywhere.com/api/flight/1/availability/2024-11-10`);
-      console.log(response)
-
-      // const data = [{"code": "sdfsd", "name": "Hola cimo est"}, {"code": "sdfsd43", "name": "Hola cimo est434"}]
       setClassFlight(response.data);
-
     } catch (err) {
       console.error('Error fetching class flight:', err);
     }
@@ -92,18 +86,17 @@ const FlightList = () => {
     setLoading(true);
     const fetchFlightList = async () => {
       try {
-
         const response = await axios.get('https://cantozil.pythonanywhere.com/api/flights/search', {
           params: { origin, destination, date }
         });
-
-        console.log(response.data)
         setResults(response.data);
-
       } catch (err) {
         console.error('Error fetching flights:', err);
       } finally {
-        setLoading(false);
+        // Añadir un retardo de 1 segundo antes de desactivar el indicador de carga
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
       }
     };
 
@@ -111,8 +104,6 @@ const FlightList = () => {
   }, [date, destination, origin]);
 
   const [selectedDate, setSelectedDate] = useState(date);
-
-
 
   const weekDays = getWeekDays(selectedDate);
 
@@ -140,15 +131,9 @@ const FlightList = () => {
           </div>
         </div>
       )}
-      <header className="header mb-4">
+      <header className="header m-4 d-flex justify-content-between align-items-center px-4">
         <Link to="/">
-          <img
-            src={logo}
-            width="150"
-            height="60"
-            alt="Logo Portal de Pago Air"
-            className="logo-left"
-          />
+          <img src={logo} width="100" alt="Logo" className="logo-left" />
         </Link>
       </header>
       <div className="results-container">
@@ -157,7 +142,7 @@ const FlightList = () => {
 
           {/* Day Selector */}
           <div className="mt-2">
-            <div className='day-selector overflow-x-auto d-flex d- justify-content-between mb-4 px-2'>
+            <div className='day-selector overflow-x-auto d-flex justify-content-between mb-4 px-2'>
               {weekDays.map((date) => {
                 const dayName = new Intl.DateTimeFormat('es-CO', { weekday: 'long' }).format(new Date(date + 'T00:00:00-05:00'));
 
@@ -206,8 +191,7 @@ const FlightList = () => {
                             <span onClick={() => handleShowModal(flight.vuelos)} className='link-span'>Directo</span>
                         }
                         <div className="position-absolute text-dark end-0">
-
-                          <span className='h2  font-weight-bold ' style={{ fontWeight: 700 }}>
+                          <span className='h2 font-weight-bold' style={{ fontWeight: 700 }}>
                             {Number(flight.precio).toLocaleString('es-CO', {
                               style: 'currency',
                               currency: 'COP',
@@ -223,142 +207,142 @@ const FlightList = () => {
                       <div className="flight-duration">{flight.duration}</div>
                     </div>
 
-                    <Accordion defaultActiveKey={0}>
-                      <Accordion.Header variant="outline-primary" onClick={handleShowClass} className='center-text-accordion-button btn-outline-primary'>
-                        Elige como quieres volar
-                      </Accordion.Header>
-                      <Accordion.Body>
+                    <Accordion defaultActiveKey={0} activeKey={activeIndex === index ? '0' : null} onSelect={() => handleShowClass(flight, index)}>
+                      <Accordion.Item eventKey="0">
+                        <Accordion.Header className='center-text-accordion-button btn-outline-primary'>
+                          Elige como quieres volar
+                        </Accordion.Header>
+                        <Accordion.Body>
+                          <div className="container">
+                            <h2 className="text-center">Nuestros Planes</h2>
+                            {classflight ? (
+                              <Row className="row-cols-1 row-cols-md-3 g-4">
+                                {/* Clase Económica */}
+                                <Col>
+                                  <Card className='shadow-sm'>
+                                    <Card.Body className='card-body'>
+                                      <Card.Title className='text-center'>Económico</Card.Title>
+                                      <Card.Subtitle className='text-center mb-3'>
+                                        {
+                                          (flight.precio + (flight.precio * (classflight.economy_class_available.percentage / 100))).toLocaleString('es-CO', {
+                                            style: 'currency',
+                                            currency: 'COP',
+                                          })
+                                        }
+                                      </Card.Subtitle>
+                                      <ul className="list-unstyled">
+                                        <li>
+                                          <BsBackpack3 className='red-icon' /> 1 artículo personal (bolso)
+                                        </li>
+                                        <li>
+                                          <PiSuitcaseRollingLight className='red-icon' /> 1 equipaje de mano (10 kg)
+                                        </li>
+                                        <li>
+                                          <LuBaggageClaim className='red-icon' /> 1 equipaje de bodega (23 kg)
+                                        </li>
+                                        <li>
+                                          <FaPlaneCircleCheck className='red-icon' /> Check-in en aeropuerto
+                                        </li>
+                                        <li>
+                                          <PiSeatLight className='red-icon' /> Asiento Economy incluido
+                                        </li>
+                                      </ul>
 
-                        <div className="container">
-                          <h2 className="text-center">Nuestros Planes</h2>
-                          {classflight ? (
-                            <Row className="row-cols-1 row-cols-md-3 g-4">
+                                    </Card.Body>
+                                    <Button disabled={classflight.economy_class_available.cant_seat > 0 ? false : true} variant='primary' block='true' className='btn' onClick={() => handleSelectClass(flight.vuelos, 'economy_class')}>
+                                      {classflight.economy_class_available.cant_seat > 0 ? 'Seleccionar' : 'Asientos No Disponibles'}
+                                    </Button>
+                                    <Card.Text className='gray-label'>Precio por pasajero</Card.Text>
+                                  </Card>
+                                </Col>
 
-                              {/* Clase Económica */}
-                              <Col>
-                                <Card className='shadow-sm'>
-                                  <Card.Body className='card-body'>
-                                    <Card.Title className='text-center'>Económico</Card.Title>
-                                    <Card.Subtitle className='text-center mb-3'>
-                                      {
-                                        (flight.precio + (flight.precio * (classflight.economy_class_available.percentage / 100))).toLocaleString('es-CO', {
-                                          style: 'currency',
-                                          currency: 'COP',
-                                        })
-                                      }
-                                    </Card.Subtitle>
-                                    <ul className="list-unstyled">
-                                      <li>
-                                        <BsBackpack3 className='red-icon' /> 1 artículo personal (bolso)
-                                      </li>
-                                      <li>
-                                        <PiSuitcaseRollingLight className='red-icon' /> 1 equipaje de mano (10 kg)
-                                      </li>
-                                      <li>
-                                        <LuBaggageClaim className='red-icon' /> 1 equipaje de bodega (23 kg)
-                                      </li>
-                                      <li>
-                                        <FaPlaneCircleCheck className='red-icon' /> Check-in en aeropuerto
-                                      </li>
-                                      <li>
-                                        <PiSeatLight className='red-icon' /> Asiento Economy incluido
-                                      </li>
-                                    </ul>
+                                {/* Clase Ejecutiva */}
+                                <Col>
+                                  <Card className='shadow-sm'>
+                                    <Card.Body className='card-body'>
+                                      <Card.Title className='text-center'>Ejecutiva</Card.Title>
+                                      <Card.Subtitle className='text-center mb-3'>
+                                        {
+                                          (flight.precio + (flight.precio * (classflight.business_class_available.percentage / 100))).toLocaleString('es-CO', {
+                                            style: 'currency',
+                                            currency: 'COP',
+                                          })
+                                        }
+                                      </Card.Subtitle>
+                                      <ul className="list-unstyled">
+                                        <li>
+                                          <BsBackpack3 className='orange-icon' /> 1 artículo personal (bolso)
+                                        </li>
+                                        <li>
+                                          <PiSuitcaseRollingLight className='orange-icon' /> 1 equipaje de mano (10 kg)
+                                        </li>
+                                        <li>
+                                          <LuBaggageClaim className='orange-icon' /> 1 equipaje de bodega (23 kg)
+                                        </li>
+                                        <li>
+                                          <FaPlaneCircleCheck className='orange-icon' /> Check-in en aeropuerto
+                                        </li>
+                                        <li>
+                                          <PiSeatLight className='orange-icon' /> Asiento Ejecutivo incluido
+                                        </li>
+                                      </ul>
 
-                                  </Card.Body>
-                                  <Button disabled={classflight.economy_class_available.cant_seat > 0 ? false : true} variant='primary' block='true' className='btn' onClick={() => handleSelectClass(flight.vuelos, 'economy_class')}>
-                                    {classflight.economy_class_available.cant_seat > 0 ? 'Seleccionar' : 'Asientos No Disponibles'}
-                                  </Button>
-                                  <Card.Text className='gray-label'>Precio por pasajero</Card.Text>
-                                </Card>
-                              </Col>
+                                    </Card.Body>
+                                    <Button disabled={classflight.business_class_available.cant_seat > 0 ? false : true} variant='primary' block='true' className='btn' onClick={() => handleSelectClass(flight.vuelos, 'business_class')}>
+                                      {classflight.business_class_available.cant_seat > 0 ? 'Seleccionar' : 'Asientos No Disponibles'}
+                                    </Button>
+                                    <Card.Text className='gray-label'>Precio por pasajero</Card.Text>
+                                  </Card>
+                                </Col>
 
-                              {/* Clase Ejecutiva */}
-                              <Col>
-                                <Card className='shadow-sm'>
-                                  <Card.Body className='card-body'>
-                                    <Card.Title className='text-center'>Ejecutiva</Card.Title>
-                                    <Card.Subtitle className='text-center mb-3'>
-                                      {
-                                        (flight.precio + (flight.precio * (classflight.business_class_available.percentage / 100))).toLocaleString('es-CO', {
-                                          style: 'currency',
-                                          currency: 'COP',
-                                        })
-                                      }
-                                    </Card.Subtitle>
-                                    <ul className="list-unstyled">
-                                      <li>
-                                        <BsBackpack3 className='orange-icon' /> 1 artículo personal (bolso)
-                                      </li>
-                                      <li>
-                                        <PiSuitcaseRollingLight className='orange-icon' /> 1 equipaje de mano (10 kg)
-                                      </li>
-                                      <li>
-                                        <LuBaggageClaim className='orange-icon' /> 1 equipaje de bodega (23 kg)
-                                      </li>
-                                      <li>
-                                        <FaPlaneCircleCheck className='orange-icon' /> Check-in en aeropuerto
-                                      </li>
-                                      <li>
-                                        <PiSeatLight className='orange-icon' /> Asiento Ejecutivo incluido
-                                      </li>
-                                    </ul>
+                                {/* Primera Clase */}
+                                <Col>
+                                  <Card className='shadow-sm'>
+                                    <Card.Body className='card-body'>
+                                      <Card.Title className='text-center'>Primera Clase</Card.Title>
+                                      <Card.Subtitle className='text-center mb-3'>
+                                        {
+                                          (flight.precio + (flight.precio * (classflight.first_class_available.percentage / 100))).toLocaleString('es-CO', {
+                                            style: 'currency',
+                                            currency: 'COP',
+                                          })
+                                        }
+                                      </Card.Subtitle>
+                                      <ul className="list-unstyled">
+                                        <li>
+                                          <BsBackpack3 className='purple-icon' /> 1 artículo personal (bolso)
+                                        </li>
+                                        <li>
+                                          <PiSuitcaseRollingLight className='purple-icon' /> 1 equipaje de mano (10 kg)
+                                        </li>
+                                        <li>
+                                          <LuBaggageClaim className='purple-icon' /> 1 equipaje de bodega (23 kg)
+                                        </li>
+                                        <li>
+                                          <FaPlaneCircleCheck className='purple-icon' /> Check-in en aeropuerto
+                                        </li>
+                                        <li>
+                                          <PiSeatLight className='purple-icon' /> Asiento Primera Clase Incluido
+                                        </li>
+                                      </ul>
 
-                                  </Card.Body>
-                                  <Button disabled={classflight.business_class_available.cant_seat > 0 ? false : true} variant='primary' block='true' className='btn' onClick={() => handleSelectClass(flight.vuelos, 'business_class')}>
-                                    {classflight.business_class_available.cant_seat > 0 ? 'Seleccionar' : 'Asientos No Disponibles'}
-                                  </Button>
-                                  <Card.Text className='gray-label'>Precio por pasajero</Card.Text>
-                                </Card>
-                              </Col>
+                                    </Card.Body>
+                                    <Button disabled={classflight.first_class_available.cant_seat > 0 ? false : true} variant='primary' block='true' className='btn' onClick={() => handleSelectClass(flight.vuelos, 'first_class')}>
+                                      {classflight.first_class_available.cant_seat > 0 ? 'Seleccionar' : 'Asientos No Disponibles'}
+                                    </Button>
+                                    <Card.Text className='gray-label'>Precio por pasajero</Card.Text>
+                                  </Card>
+                                </Col>
 
-                              {/* Primera Clase */}
-                              <Col>
-                                <Card className='shadow-sm'>
-                                  <Card.Body className='card-body'>
-                                    <Card.Title className='text-center'>Primera Clase</Card.Title>
-                                    <Card.Subtitle className='text-center mb-3'>
-                                      {
-                                        (flight.precio + (flight.precio * (classflight.first_class_available.percentage / 100))).toLocaleString('es-CO', {
-                                          style: 'currency',
-                                          currency: 'COP',
-                                        })
-                                      }
-                                    </Card.Subtitle>
-                                    <ul className="list-unstyled">
-                                      <li>
-                                        <BsBackpack3 className='purple-icon' /> 1 artículo personal (bolso)
-                                      </li>
-                                      <li>
-                                        <PiSuitcaseRollingLight className='purple-icon' /> 1 equipaje de mano (10 kg)
-                                      </li>
-                                      <li>
-                                        <LuBaggageClaim className='purple-icon' /> 1 equipaje de bodega (23 kg)
-                                      </li>
-                                      <li>
-                                        <FaPlaneCircleCheck className='purple-icon' /> Check-in en aeropuerto
-                                      </li>
-                                      <li>
-                                        <PiSeatLight className='purple-icon' /> Asiento Primera Clase Incluido
-                                      </li>
-                                    </ul>
-
-                                  </Card.Body>
-                                  <Button disabled={classflight.first_class_available.cant_seat > 0 ? false : true} variant='primary' block='true' className='btn' onClick={() => handleSelectClass(flight.vuelos, 'first_class')}>
-                                    {classflight.first_class_available.cant_seat > 0 ? 'Seleccionar' : 'Asientos No Disponibles'}
-                                  </Button>
-                                  <Card.Text className='gray-label'>Precio por pasajero</Card.Text>
-                                </Card>
-                              </Col>
-
-                            </Row>
-                          ) : (
-                            <Row className="row-cols-1 row-cols-md-3 g-4">
-                              <p className='text-center'>Cargando...</p>
-                            </Row>
-                          )}
-                        </div>
-                      </Accordion.Body>
+                              </Row>
+                            ) : (
+                              <Row className="row-cols-1 row-cols-md-3 g-4">
+                                <p className='text-center'>Cargando...</p>
+                              </Row>
+                            )}
+                          </div>
+                        </Accordion.Body>
+                      </Accordion.Item>
                     </Accordion>
 
                   </Card>
@@ -379,7 +363,7 @@ const FlightList = () => {
           </Row>
 
           {/* Modal */}
-          <Modal show={showModal} onHide={handleCloseModal}>
+          <Modal show={showModal} onHide={handleCloseModal} centered>
             <Modal.Header closeButton>
               <Modal.Title>Detalles del vuelo</Modal.Title>
             </Modal.Header>
@@ -389,7 +373,6 @@ const FlightList = () => {
                   <div key={flight.id}>
                     <p><strong>Origen:</strong> {flight.origin} </p>
                     <p><strong>Destino:</strong> {flight.destination} </p>
-                    {/* <p><strong>Duración:</strong> {flight.duration}</p> */}
                     <p><strong>Hora de salida:</strong> {flight.departure_time}</p>
                     <p><strong>Hora de llegada:</strong> {flight.arrival_time}</p>
                     <hr />
@@ -411,4 +394,3 @@ const FlightList = () => {
 };
 
 export default FlightList;
-

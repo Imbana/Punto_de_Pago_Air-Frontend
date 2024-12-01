@@ -2,8 +2,8 @@ export const getWeekDays = (baseDate) => {
 
     const date = new Date(baseDate + 'T00:00:00-05:00');
 
-    const days = date.getDay(); 
-    
+    const days = date.getDay();
+
     const monday = new Date(date);
     monday.setDate(date.getDate() - (days === 0 ? 6 : days - 1));
 
@@ -12,7 +12,7 @@ export const getWeekDays = (baseDate) => {
     for (let i = 0; i < 7; i++) {
         const day = new Date(monday);
         day.setDate(monday.getDate() + i);
-        
+
         weekDays.push(day.toISOString().split('T')[0]);
     }
 
@@ -38,7 +38,7 @@ export const dataReservation = (infoFlight, inforUser) => {
     }));
 
     return {
-        seat_class: "economy_class",
+        seat_class: inforUser.seat_class,
         flight_id: String(flightData.id),
         passengers,
         luggage_hand: true,
@@ -51,7 +51,7 @@ export const dataReservation = (infoFlight, inforUser) => {
 
 
 
-export const  processFlightData = (flights) => {
+export const processFlightData = (flights) => {
     const processedFlights = [];
 
     if (flights.direct_flights) {

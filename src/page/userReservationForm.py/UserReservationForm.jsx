@@ -17,6 +17,7 @@ const UserReservationForm = () => {
     const babies = parseInt(information.flight.filters.babies || 0);
     const children = parseInt(information.flight.filters.children || 0);
     const passengersCount = adults + children + babies || 1;
+    const seat_class = information.flight.filters.seat_class || 'economy_class';
 
     const {
         register,
@@ -26,6 +27,7 @@ const UserReservationForm = () => {
         reset
     } = useForm({
         defaultValues: {
+            seat_class: seat_class,
             passengers: [...Array(passengersCount).keys()].map((index) => ({
                 firstName: '',
                 lastName: '',

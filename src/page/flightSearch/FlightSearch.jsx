@@ -58,11 +58,7 @@ const FlightSearch = () => {
         });
     };
 
-    // Handle date selection
-    const handleDateSelect = (selectedDate) => {
-        setDate(selectedDate);
-        setShowCalendar(false);
-    };
+
 
     // Handle input click to toggle calendar
     const handleInputClick = () => {
@@ -176,11 +172,18 @@ const FlightSearch = () => {
                                                 <DayPicker
                                                     mode="single"
                                                     selected={date}
-                                                    onSelect={handleDateSelect}
-                                                    fromDate={new Date()} // Solo permitir seleccionar desde la fecha actual
+                                                    onSelect={(selectedDate) => {
+                                                        setDate(selectedDate);
+                                                        setShowCalendar(false);
+                                                    }}
+                                                    fromDate={new Date()} // Permitir seleccionar desde la fecha actual
+                                                    disabled={[
+                                                        { before: new Date() } // Deshabilitar todas las fechas antes de hoy
+                                                    ]}
                                                     styles={{
                                                         today: { backgroundColor: '#349dd4', color: '#ffffff' },
                                                         selected: { backgroundColor: '#0e3b5e', color: '#ffffff' },
+                                                        disabled: { opacity: 0.3 } // Opcional: para estilizar las fechas deshabilitadas
                                                     }}
                                                     locale={es}
                                                 />
@@ -188,6 +191,9 @@ const FlightSearch = () => {
                                         )}
                                     </div>
                                 </Col>
+
+
+
                                 <Col xs={12} md={2}>
                                     <Button className="btn-passenger w-100" onClick={() => setShowModal(true)}>
                                         {passengers.adults + passengers.children + passengers.babies} Pasajeros

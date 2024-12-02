@@ -123,13 +123,18 @@ const FlightSearch = () => {
                                                 Origen
                                             </option>
                                             {airports.map((airport) => (
-                                                <option key={airport.code} value={airport.code}>
+                                                <option
+                                                    key={airport.code}
+                                                    value={airport.code}
+                                                    disabled={airport.code === destination} // Deshabilitar si el aeropuerto está seleccionado como destino
+                                                >
                                                     {airport.name} - {airport.code}
                                                 </option>
                                             ))}
                                         </Form.Select>
                                     </InputGroup>
                                 </Col>
+
                                 <Col xs={12} md={3}>
                                     <InputGroup>
                                         <InputGroup.Text>
@@ -138,14 +143,25 @@ const FlightSearch = () => {
                                         <Form.Select
                                             aria-label="Destino"
                                             value={destination}
-                                            onChange={(e) => setDestination(e.target.value)}
+                                            onChange={(e) => {
+                                                if (e.target.value === origin) {
+                                                    // Mostrar un mensaje de advertencia
+                                                    alert('El destino no puede ser el mismo que el origen. Por favor, selecciona una ciudad diferente.');
+                                                } else {
+                                                    setDestination(e.target.value);
+                                                }
+                                            }}
                                             required
                                         >
                                             <option value="" disabled>
                                                 Destino
                                             </option>
                                             {airports.map((airport) => (
-                                                <option key={airport.code} value={airport.code}>
+                                                <option
+                                                    key={airport.code}
+                                                    value={airport.code}
+                                                    disabled={airport.code === origin} // Deshabilitar si el aeropuerto está seleccionado como origen
+                                                >
                                                     {airport.name} - {airport.code}
                                                 </option>
                                             ))}
@@ -154,7 +170,7 @@ const FlightSearch = () => {
                                 </Col>
                                 <Col xs={12} md={3}>
                                     <div ref={inputRef} className="position-relative">
-                                        <InputGroup onClick={handleInputClick}>
+                                        <InputGroup onClick={handleInputClick} required>
                                             <InputGroup.Text>
                                                 <MdDateRange />
                                             </InputGroup.Text>

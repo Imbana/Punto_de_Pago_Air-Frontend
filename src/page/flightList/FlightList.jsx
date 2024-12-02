@@ -119,6 +119,16 @@ const FlightList = () => {
     });
   };
 
+  const scrollDaySelector = (direction) => {
+    const daySelector = document.querySelector('.day-selector');
+    if (direction === 'left') {
+      daySelector.scrollBy({ left: -150, behavior: 'smooth' });
+    } else if (direction === 'right') {
+      daySelector.scrollBy({ left: 150, behavior: 'smooth' });
+    }
+  };
+
+
   return (
     <>
       {loading && (
@@ -138,26 +148,74 @@ const FlightList = () => {
       </header>
       <div className="results-container">
         <Container className="mt-5 mb-5">
-          <h2 className="mb-4">Vuelos desde {origin} hacia {destination}</h2>
+
+          <div className="hero-list mb-4">
+            {/* Título Vuelos */}
+            <h2 className="flight-title mb-2 text-center">Vuelos</h2>
+
+            {/* Texto del origen y destino */}
+            <div className="flight-path d-flex align-items-center justify-content-between mt-3">
+              {/* Punto de origen */}
+              <h4 className="flight-origin">{origin}</h4>
+
+              {/* Contenedor de la línea y el avión */}
+              <div className="flight-line-container d-flex align-items-center flex-grow-1 mx-3 position-relative">
+                {/* Línea punteada a la izquierda */}
+                <div className="flight-line flex-grow-1"></div>
+
+                {/* Ícono del avión centrado */}
+                <MdFlight className="plane-icon position-absolute start-50 translate-middle" />
+
+                {/* Línea punteada a la derecha */}
+                <div className="flight-line flex-grow-1"></div>
+              </div>
+
+              {/* Punto de destino */}
+              <h4 className="flight-destination">{destination}</h4>
+            </div>
+          </div>
+
+
+
+
 
           {/* Day Selector */}
           <div className="mt-2">
-            <div className='day-selector overflow-x-auto d-flex justify-content-between mb-4 px-2'>
-              {weekDays.map((date) => {
-                const dayName = new Intl.DateTimeFormat('es-CO', { weekday: 'long' }).format(new Date(date + 'T00:00:00-05:00'));
+            <div className="day-selector-wrapper position-relative d-flex align-items-center">
+              {/* Botón de desplazamiento hacia la izquierda */}
+              <button className="scroll-button left-button" onClick={() => scrollDaySelector('left')}>
+                &#8249;
+              </button>
 
-                return (
-                  <button
-                    key={date}
-                    className={`btn ${date === selectedDate ? 'btn-primary' : 'btn-outline-primary'}`}
-                    onClick={() => handleDayClick(date)}
-                  >
-                    {dayName} ({date})
-                  </button>
-                );
-              })}
+              <div className="day-selector overflow-x-auto d-flex justify-content-between mb-4 px-2">
+                {weekDays.map((date) => {
+                  const dayName = new Intl.DateTimeFormat('es-CO', { weekday: 'short' }).format(new Date(date + 'T00:00:00-05:00')); // Abreviación del día
+                  const dayNumber = new Date(date).getDate(); // Número del día
+                  const monthName = new Intl.DateTimeFormat('es-CO', { month: 'short' }).format(new Date(date + 'T00:00:00-05:00')); // Abreviación del mes
+
+                  return (
+                    <button
+                      key={date}
+                      className={`btn day-button ${date === selectedDate ? 'btn-selected' : ''}`}
+                      onClick={() => handleDayClick(date)}
+                    >
+                      {`${dayName}. ${dayNumber} ${monthName}.`}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Botón de desplazamiento hacia la derecha */}
+              <button className="scroll-button right-button" onClick={() => scrollDaySelector('right')}>
+                &#8250;
+              </button>
             </div>
           </div>
+
+
+
+
+
 
           {/* Flights */}
           <Row className="g-4">
@@ -165,14 +223,14 @@ const FlightList = () => {
               results.map((flight, index) => (
                 <Col key={index} xs={12}>
                   <Card className="card-flight">
-                    <div className="d-flex justify-content-between align-items-center mb-3">
+                    <div className="d-flex justify-content-between align-items-center">
                       <div style={{ textAlign: 'left' }}>
                         <h5 className="flight-info-header">
                           {
                             new Date(flight.fecha_inicio).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })
                           }
                         </h5>
-                        <span className="flight-info-sub">{flight.origin.code}</span>
+                        <span className="flight-info-sub text-code">{flight.origin.code}</span>
                       </div>
                       <div style={{ textAlign: 'right' }}>
                         <h5 className="flight-info-header">
@@ -180,9 +238,12 @@ const FlightList = () => {
                             new Date(flight.fecha_final).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })
                           }
                         </h5>
-                        <span className="flight-info-sub">{flight.destination.code}</span>
+                        <span className="flight-info-sub text-code">{flight.destination.code}</span>
                       </div>
                     </div>
+
+
+
                     <div className="text-center mb-3">
                       <div className="flight-type position-relative">
                         {
@@ -190,26 +251,36 @@ const FlightList = () => {
                             <span onClick={() => handleShowModal(flight.vuelos)} className='link-span'>{flight.vuelos.length - 1} Escala(s)</span> :
                             <span onClick={() => handleShowModal(flight.vuelos)} className='link-span'>Directo</span>
                         }
-                        <div className="position-absolute text-dark end-0">
-                          <span className='h2 font-weight-bold' style={{ fontWeight: 700 }}>
-                            {Number(flight.precio).toLocaleString('es-CO', {
-                              style: 'currency',
-                              currency: 'COP',
-                            })} </span> COP
-                        </div>
                       </div>
 
-                      <div className="d-flex align-items-center justify-content-center mt-3">
+                      <div className="text-center flight-duration text-duration">{flight.duracion}</div>
+
+
+                      <div className="flight-route d-flex align-items-center justify-content-center mt-3">
+                        <div className="flight-point"></div>
                         <div className="flight-details-divider"></div>
                         <MdFlight className="flight-details-icon" />
                         <div className="flight-details-divider"></div>
+                        <div className="flight-point"></div>
                       </div>
-                      <div className="flight-duration">{flight.duration}</div>
+
+
+
                     </div>
+
+
+                    <div className="text-center mb-2">
+                      <span className='h2 font-weight-bold' style={{ fontWeight: 700 }}>
+                        {Number(flight.precio).toLocaleString('es-CO', {
+                          style: 'currency',
+                          currency: 'COP',
+                        })} </span> COP
+                    </div>
+
 
                     <Accordion defaultActiveKey={0} activeKey={activeIndex === index ? '0' : null} onSelect={() => handleShowClass(flight, index)}>
                       <Accordion.Item eventKey="0">
-                        <Accordion.Header className='center-text-accordion-button btn-outline-primary'>
+                        <Accordion.Header className='center-text-accordion-button'>
                           Elige como quieres volar
                         </Accordion.Header>
                         <Accordion.Body>

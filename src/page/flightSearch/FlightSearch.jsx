@@ -1,11 +1,12 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import logo from '../../assets/logo.png';
+import { es } from 'date-fns/locale';
 import { Form, Button, InputGroup, FormControl, Container, Modal, Card, Row, Col } from 'react-bootstrap';
 import { MdFlightTakeoff, MdFlightLand, MdDateRange, MdSearch, MdRemove, MdAdd } from 'react-icons/md';
 import './flightSearch.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useStoreFlight } from '../../store/store'
+import logo from '../../assets/logo.png';
 import { useNavigate, Link } from 'react-router-dom';
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
@@ -181,6 +182,7 @@ const FlightSearch = () => {
                                                         today: { backgroundColor: '#349dd4', color: '#ffffff' },
                                                         selected: { backgroundColor: '#0e3b5e', color: '#ffffff' },
                                                     }}
+                                                    locale={es}
                                                 />
                                             </div>
                                         )}

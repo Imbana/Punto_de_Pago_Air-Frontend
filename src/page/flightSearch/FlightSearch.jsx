@@ -23,6 +23,7 @@ const FlightSearch = () => {
     const [showCalendar, setShowCalendar] = useState(false); // Estado para mostrar el calendario
     const { start_flight } = useStoreFlight();
     const inputRef = useRef();
+    // const formRef = useRef();
 
     // Fetch airports on mount
     useEffect(() => {
@@ -170,7 +171,7 @@ const FlightSearch = () => {
                                 </Col>
                                 <Col xs={12} md={3}>
                                     <div ref={inputRef} className="position-relative">
-                                        <InputGroup onClick={handleInputClick} required>
+                                        <InputGroup onClick={handleInputClick}>
                                             <InputGroup.Text>
                                                 <MdDateRange />
                                             </InputGroup.Text>
@@ -180,7 +181,11 @@ const FlightSearch = () => {
                                                 placeholder="Selecciona fecha"
                                                 readOnly
                                                 required
+                                                isInvalid={!date && !showCalendar}
                                             />
+                                            <Form.Control.Feedback type="invalid">
+                                                La fecha es obligatoria.
+                                            </Form.Control.Feedback>
                                         </InputGroup>
 
                                         {showCalendar && (
@@ -207,6 +212,7 @@ const FlightSearch = () => {
                                         )}
                                     </div>
                                 </Col>
+
 
 
 
